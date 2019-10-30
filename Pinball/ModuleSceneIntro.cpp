@@ -29,7 +29,7 @@ bool ModuleSceneIntro::Start()
 	circle = App->textures->Load("assets/wheel.png"); 
 	box = App->textures->Load("assets/crate.png");
 	rick = App->textures->Load("assets/rick_head.png");
-	board_tex = App->textures->Load("assets/sprites/board.png");
+	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
@@ -260,7 +260,7 @@ update_status ModuleSceneIntro::Update()
 
 	//draw scene
 
-	//App->renderer->Blit(board_tex, 0, 0);
+	App->renderer->Blit(board_tex, 0, 0);
 
 	while(c != NULL)
 	{
