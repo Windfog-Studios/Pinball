@@ -26,6 +26,9 @@ public:
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> boxes;
 	p2List<PhysBody*> ricks;
+	p2List<PhysBody*> board;
+
+	PhysBody* triangle1;
 
 	PhysBody* sensor;
 	bool sensed;
@@ -33,7 +36,7 @@ public:
 	SDL_Texture* circle;
 	SDL_Texture* box;
 	SDL_Texture* rick;
-	SDL_Texture* board;
+	SDL_Texture* board_tex;
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool ray_on;

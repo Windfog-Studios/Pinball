@@ -26,13 +26,152 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	//sprites
-	circle = App->textures->Load("assets/Ball.png"); 
-	board = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
+
+	circle = App->textures->Load("assets/wheel.png"); 
+	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
+
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
 
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	//colliders
+	int triangle_1_points[10] = {
+	65, 462,
+	100, 519,
+	98, 526,
+	56, 508,
+	57, 467
+	};
+	int triangle_2_points[10] = {
+	256, 464,
+	264, 465,
+	264, 509,
+	229, 526,
+	222, 520
+	};
+	int right_bar_points[30] = {
+	217, 596,
+	217, 582,
+	307, 538,
+	307, 445,
+	265, 371,
+	266, 360,
+	280, 355,
+	294, 374,
+	306, 373,
+	308, 352,
+	309, 261,
+	315, 230,
+	322, 220,
+	330, 223,
+	328, 597
+	};
+	int left_wood_points[56] = {
+	51, 272,
+	60, 276,
+	70, 270,
+	60, 255,
+	84, 238,
+	93, 249,
+	105, 240,
+	84, 212,
+	82, 177,
+	89, 166,
+	104, 165,
+	107, 178,
+	111, 215,
+	130, 225,
+	137, 215,
+	136, 197,
+	117, 157,
+	114, 129,
+	132, 87,
+	167, 64,
+	168, 41,
+	155, 40,
+	95, 66,
+	71, 95,
+	55, 129,
+	43, 184,
+	41, 229,
+	45, 247
+	};
+	int right_wood_points[48] = {
+	191, 221,
+	197, 214,
+	230, 199,
+	258, 175,
+	274, 138,
+	273, 104,
+	260, 83,
+	254, 74,
+	262, 58,
+	275, 57,
+	301, 90,
+	316, 125,
+	319, 166,
+	312, 200,
+	290, 250,
+	273, 278,
+	262, 278,
+	220, 255,
+	221, 248,
+	225, 239,
+	221, 229,
+	209, 228,
+	198, 234,
+	190, 228
+	};
+	int left_l_points[12] = {
+	32, 467,
+	38, 467,
+	37, 521,
+	98, 549,
+	95, 555,
+	30, 525
+	};
+	int right_l_points[12] = {
+	284, 467,
+	290, 467,
+	290, 526,
+	229, 555,
+	226, 548,
+	283, 522
+	};
+	int left_capsule[16] = {
+	190, 48,
+	194, 42,
+	203, 42,
+	205, 46,
+	205, 72,
+	201, 76,
+	195, 76,
+	190, 72
+	};
+	int right_capsule[16] = {
+	222, 57,
+	225, 51,
+	232, 51,
+	236, 57,
+	235, 80,
+	233, 85,
+	226, 85,
+	222, 81
+	};
+
+
+	App->physics->CreateStaticChain(PIXEL_TO_METERS(0), PIXEL_TO_METERS(0), triangle_1_points, 10);
+	App->physics->CreateStaticChain(0, 0, triangle_2_points, 10);
+	App->physics->CreateStaticChain(0, 0, right_bar_points, 30);
+	App->physics->CreateStaticChain(0, 0, left_wood_points, 56);
+	App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
+	App->physics->CreateStaticChain(0, 0, left_l_points, 12);
+	App->physics->CreateStaticChain(0, 0, right_l_points, 12);
+	App->physics->CreateStaticChain(0, 0, left_capsule, 16);
+	App->physics->CreateStaticChain(0, 0, right_capsule, 16);
+
+
+	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
 	boxes.add(App->physics->CreateRectangle(345, 430, 50, 50));
 
@@ -124,7 +263,7 @@ update_status ModuleSceneIntro::Update()
 
 	//draw scene
 
-	App->renderer->Blit(board, 0, 0);
+	App->renderer->Blit(board_tex, 0, 0);
 
 	while(c != NULL)
 	{
