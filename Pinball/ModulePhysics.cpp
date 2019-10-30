@@ -36,24 +36,61 @@ bool ModulePhysics::Start()
 	ground = world->CreateBody(&bd);
 
 	// big static circle as "ground" in the middle of the screen
-	/*
-	int x = SCREEN_WIDTH / 2;
-	int y = SCREEN_HEIGHT / 1.5f;
-	int diameter = SCREEN_WIDTH / 2;
+	b2BodyDef board_bodyDef;
+	board_bodyDef.type = b2_staticBody;
+	board_bodyDef.position.Set(0, 0);
 
-	b2BodyDef body;
-	body.type = b2_staticBody;
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+	b2Body* b = world->CreateBody(&board_bodyDef);
 
-	b2Body* big_ball = world->CreateBody(&body);
+	b2ChainShape board_shape;
+	b2Vec2* p = new b2Vec2[29];
+	int board_points[58] = {
+		1, 597,
+		1, 2,
+		355, 2,
+		356, 596,
+		344, 596,
+		345, 154,
+		319, 76,
+		280, 40,
+		253, 30,
+		223, 20,
+		203, 20,
+		173, 20,
+		150, 20,
+		120, 30,
+		99, 35,
+		68, 57,
+		39, 97,
+		23, 138,
+		18, 193,
+		18, 236,
+		26, 276,
+		40, 318,
+		61, 344,
+		64, 360,
+		60, 370,
+		12, 447,
+		11, 538,
+		104, 585,
+		104, 599
+	};
 
-	b2CircleShape shape;
-	shape.m_radius = PIXEL_TO_METERS(diameter) * 0.5f;
+	for (uint i = 0; i < 29; ++i)
+	{
+		p[i].x = PIXEL_TO_METERS(board_points[i * 2 + 0]);
+		p[i].y = PIXEL_TO_METERS(board_points[i * 2 + 1]);
+	}
 
-	b2FixtureDef fixture;
-	fixture.shape = &shape;
-	big_ball->CreateFixture(&fixture);
-	*/
+	board_shape.CreateLoop(p, 29);
+
+	b2FixtureDef board_fixture;
+	board_fixture.shape = &board_shape;
+
+	b->CreateFixture(&board_fixture);
+
+	delete p;
+
 	return true;
 }
 
@@ -164,6 +201,40 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 	b2Vec2* p = new b2Vec2[size / 2];
 
 	for(uint i = 0; i < size / 2; ++i)
+	{
+		p[i].x = PIXEL_TO_METERS(points[i * 2 + 0]);
+		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
+	}
+
+	shape.CreateLoop(p, size / 2);
+
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+
+	b->CreateFixture(&fixture);
+
+	delete p;
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = b;
+	b->SetUserData(pbody);
+	pbody->width = pbody->height = 0;
+
+	return pbody;
+}
+
+PhysBody* ModulePhysics::CreateStaticChain(int x, int y, int* points, int size)
+{
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* b = world->CreateBody(&body);
+
+	b2ChainShape shape;
+	b2Vec2* p = new b2Vec2[size / 2];
+
+	for (uint i = 0; i < size / 2; ++i)
 	{
 		p[i].x = PIXEL_TO_METERS(points[i * 2 + 0]);
 		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
