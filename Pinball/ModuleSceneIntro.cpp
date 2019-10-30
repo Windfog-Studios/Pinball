@@ -29,7 +29,7 @@ bool ModuleSceneIntro::Start()
 	circle = App->textures->Load("assets/wheel.png"); 
 	box = App->textures->Load("assets/crate.png");
 	rick = App->textures->Load("assets/rick_head.png");
-	board = App->textures->Load("assets/sprites/board.png");
+	board = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
