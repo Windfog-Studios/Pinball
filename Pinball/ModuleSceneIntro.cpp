@@ -25,10 +25,14 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("pinball/wheel.png"); 
-	box = App->textures->Load("pinball/crate.png");
-	rick = App->textures->Load("pinball/rick_head.png");
-	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
+	//sprites
+	circle = App->textures->Load("assets/wheel.png"); 
+	box = App->textures->Load("assets/crate.png");
+	rick = App->textures->Load("assets/rick_head.png");
+	board = App->textures->Load("assets/sprites/board.png");
+
+	//sounds
+	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
@@ -116,6 +120,10 @@ update_status ModuleSceneIntro::Update()
 
 	// All draw functions ------------------------------------------------------
 	p2List_item<PhysBody*>* c = circles.getFirst();
+
+	//draw scene
+
+	App->renderer->Blit(board, 0, 0);
 
 	while(c != NULL)
 	{
