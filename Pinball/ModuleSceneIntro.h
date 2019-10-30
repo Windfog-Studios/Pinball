@@ -4,6 +4,11 @@
 #include "p2Point.h"
 #include "Globals.h"
 
+#define START_BALL_POSITION_X 338
+#define START_BALL_POSITION_Y 400
+#define BALL_SIZE 7
+
+
 class PhysBody;
 
 class ModuleSceneIntro : public Module

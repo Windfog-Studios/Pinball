@@ -26,15 +26,15 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	//sprites
-	circle = App->textures->Load("assets/wheel.png"); 
-	box = App->textures->Load("assets/crate.png");
-	rick = App->textures->Load("assets/rick_head.png");
+	circle = App->textures->Load("assets/Ball.png"); 
 	board = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+
+	boxes.add(App->physics->CreateRectangle(345, 430, 50, 50));
 
 	return ret;
 }
@@ -50,6 +50,7 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		ray_on = !ray_on;
@@ -59,7 +60,7 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 25));
+		circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_Y, BALL_SIZE));
 		circles.getLast()->data->listener = this;
 	}
 
