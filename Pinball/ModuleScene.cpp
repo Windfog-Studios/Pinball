@@ -29,7 +29,8 @@ bool ModuleScene::Start()
 
 	circle = App->textures->Load("assets/wheel.png"); 
 	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
-
+	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
+	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png")
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
@@ -139,9 +140,15 @@ update_status ModuleScene::Update()
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
-		b2Vec2 force = b2Vec2(0, -200);
-		left_flipper->body->ApplyForceToCenter(force, 1);
+		b2Vec2 impulse = b2Vec2(0, -200);
+		left_flipper->body->ApplyForceToCenter(impulse, 1);
 		left_flipper_joint.lowerAngle = 45 * DEGTORAD;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
+		b2Vec2 impulse = b2Vec2(0, -200);
+		right_flipper->body->ApplyForceToCenter(impulse, 1);
+		right_flipper_joint.lowerAngle = 45 * DEGTORAD;
 	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
@@ -160,7 +167,7 @@ update_status ModuleScene::Update()
 
 	//draw scene
 
-	//App->renderer->Blit(board_tex, 0, 0);
+	App->renderer->Blit(board_tex, 0, 0);
 
 	while(c != NULL)
 	{
@@ -196,6 +203,13 @@ update_status ModuleScene::Update()
 		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
+
+	//blit game elements
+	int x, y;
+	left_flipper->GetPosition(x, y);
+	App->renderer->Blit(flipper_tex, x-5, y-15, NULL, 1.0f, left_flipper->GetRotation());
+	right_flipper->GetPosition(x, y);
+	App->renderer->Blit(flipper_tex, x - 5, y - 15, NULL, 1.0f,right_flipper->GetRotation());
 
 	// ray -----------------
 	if(ray_on == true)
@@ -420,27 +434,41 @@ void ModuleScene::initializeFlippers() {
 	};
 
 	//flippers
-	left_flipper = App->physics->CreateRectangle(60, 547, 20, 5);
+	left_flipper = App->physics->CreateRectangle(107, 547, 45, 10);
 	//left_flipper->body->SetType(b2_staticBody);
-	right_flipper = App->physics->CreateChain(170, 547, right_flipper_points, 10);
+	right_flipper = App->physics->CreateRectangle(180, 547, 45, 10);
 	//right_flipper->body->SetType(b2_staticBody);
 
 	//flippers anchors
 	left_flipper_anchor = App->physics->CreateCircle(108, 557, 3);
 	left_flipper_anchor->body->SetType(b2_staticBody);
-	right_flipper_anchor = App->physics->CreateCircle(215, 557, 3);
+	right_flipper_anchor = App->physics->CreateCircle(216, 557, 3);
 	right_flipper_anchor->body->SetType(b2_staticBody);
 
 	//left flipper movement
 	left_flipper_joint.bodyA = left_flipper->body;
 	left_flipper_joint.bodyB = left_flipper_anchor->body;
-	left_flipper_joint.referenceAngle = 0;
-	left_flipper_joint.lowerAngle = -45 * DEGTORAD;
-	left_flipper_joint.upperAngle = 45 * DEGTORAD;
+	//left_flipper_joint.referenceAngle = 0;
+	left_flipper_joint.lowerAngle = -25 * DEGTORAD;
+	left_flipper_joint.upperAngle = 35 * DEGTORAD;
 	left_flipper_joint.enableLimit = true;
-	left_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(-10), PIXEL_TO_METERS(0));
+	left_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(-14), PIXEL_TO_METERS(0));
 	left_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* left_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&left_flipper_joint);
+
+
+	//right flipper movement
+	right_flipper_joint.bodyA = right_flipper->body;
+	right_flipper_joint.bodyB = right_flipper_anchor->body;
+	right_flipper_joint.referenceAngle = 0;
+	right_flipper_joint.lowerAngle = -35 * DEGTORAD;
+	right_flipper_joint.upperAngle = 25 * DEGTORAD;
+	right_flipper_joint.enableLimit = true;
+	right_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(14), PIXEL_TO_METERS(0));
+	right_flipper_joint.localAnchorB.Set(0, 0);
+	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
+}
+
 }
 
 
@@ -469,3 +497,5 @@ void ModuleScene::initializekicker() {
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
 
 }
+
+

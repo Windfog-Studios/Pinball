@@ -54,10 +54,15 @@ public:
 	PhysBody* sensor;
 	bool sensed;
 
+	//sprites
 	SDL_Texture* circle;
 	SDL_Texture* box;
 	SDL_Texture* rick;
 	SDL_Texture* board_tex;
+	SDL_Texture* flipper_tex;
+	SDL_Texture* spritesheet;
+
+	//fx
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool ray_on;
