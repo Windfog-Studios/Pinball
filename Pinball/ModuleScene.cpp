@@ -35,8 +35,6 @@ bool ModuleScene::Start()
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
 
 	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
-	
-	boxes.add(App->physics->CreateRectangle(345, 430, 50, 50));
 
 	InitializeSceneColliders();
 	
@@ -45,6 +43,8 @@ bool ModuleScene::Start()
 	//player ball
 	ball = App->physics->CreateCircle(336, 400, BALL_SIZE);
 
+	//kicker
+	kicker = App->physics->CreateRectangle(336, 404, 10, 10);
 
 	return ret;
 }
@@ -72,7 +72,7 @@ update_status ModuleScene::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_Y, BALL_SIZE));
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), BALL_SIZE));
 		circles.getLast()->data->listener = this;
 	}
 
@@ -125,7 +125,7 @@ update_status ModuleScene::Update()
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
 		b2Vec2 force = b2Vec2(0,- 200);
 		left_flipper->body->ApplyForceToCenter(force, 1);
-		left_flipper_joint.lowerAngle = 0.25 * b2_pi;
+		left_flipper_joint.lowerAngle = 30 * DEGTORAD;
 	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
@@ -416,20 +416,21 @@ void ModuleScene::InitializeSceneColliders() {
 }
 
 void ModuleScene::initializeFlippers() {
-	left_flipper_joint.Initialize(left_flipper_anchor->body, left_flipper->body, left_flipper_anchor->body->GetWorldCenter());
+	//left_flipper_joint.Initialize(left_flipper_anchor->body, left_flipper->body, left_flipper_anchor->body->GetWorldCenter());
+	left_flipper_joint.bodyA = left_flipper->body;
+	left_flipper_joint.bodyB = left_flipper_anchor->body;
 	left_flipper_joint.referenceAngle = 0;
 	left_flipper_joint.enableLimit = true;
-	left_flipper_joint.lowerAngle = -0.25f * b2_pi;
-	left_flipper_joint.upperAngle = 0.25f * b2_pi;
-	left_flipper_joint.motorSpeed = -10.0f;
-	left_flipper_joint.maxMotorTorque = 10.0f;
-	left_flipper_joint.enableMotor = true;
+	left_flipper_joint.lowerAngle = -45 * DEGTORAD;
+	left_flipper_joint.upperAngle = 45 * DEGTORAD;
+	left_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(15), PIXEL_TO_METERS(10));
+	left_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* left_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&left_flipper_joint);
 
 	right_flipper_joint.Initialize(right_flipper_anchor->body, right_flipper->body, right_flipper_anchor->body->GetWorldCenter());
 	right_flipper_joint.referenceAngle = 0;
 	right_flipper_joint.enableLimit = true;
-	right_flipper_joint.lowerAngle = -0.25f * b2_pi;
-	right_flipper_joint.upperAngle = 0.25f * b2_pi;
+	right_flipper_joint.lowerAngle = -45 * DEGTORAD;
+	right_flipper_joint.upperAngle = 45 * DEGTORAD;
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
 }

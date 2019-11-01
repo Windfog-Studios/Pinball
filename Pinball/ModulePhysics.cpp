@@ -153,6 +153,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 	shape.CreateLoop(p, size / 2);
 
 	b2FixtureDef fixture;
+	fixture.density = 1.0f;
 	fixture.shape = &shape;
 
 	b->CreateFixture(&fixture);
