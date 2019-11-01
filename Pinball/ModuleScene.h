@@ -11,11 +11,11 @@
 
 class PhysBody;
 
-class ModuleSceneIntro : public Module
+class ModuleScene : public Module
 {
 public:
-	ModuleSceneIntro(Application* app, bool start_enabled = true);
-	~ModuleSceneIntro();
+	ModuleScene(Application* app, bool start_enabled = true);
+	~ModuleScene();
 
 	bool Start();
 	update_status Update();
@@ -29,6 +29,12 @@ public:
 	p2List<PhysBody*> board;
 
 	PhysBody* triangle1;
+
+	//bumpers
+	PhysBody* left_bumper_anchor;
+	PhysBody* left_bumper;
+	PhysBody* right_bumper_anchor;
+	PhysBody* right_bumper;
 
 	PhysBody* sensor;
 	bool sensed;

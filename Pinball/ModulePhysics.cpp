@@ -35,62 +35,6 @@ bool ModulePhysics::Start()
 	b2BodyDef bd;
 	ground = world->CreateBody(&bd);
 
-	// big static circle as "ground" in the middle of the screen
-	b2BodyDef board_bodyDef;
-	board_bodyDef.type = b2_staticBody;
-	board_bodyDef.position.Set(0, 0);
-
-	b2Body* b = world->CreateBody(&board_bodyDef);
-
-	b2ChainShape board_shape;
-	b2Vec2* p = new b2Vec2[29];
-	int board_points[58] = {
-		1, 597,
-		1, 2,
-		355, 2,
-		356, 596,
-		344, 596,
-		345, 154,
-		319, 76,
-		280, 40,
-		253, 30,
-		223, 20,
-		203, 20,
-		173, 20,
-		150, 20,
-		120, 30,
-		99, 35,
-		68, 57,
-		39, 97,
-		23, 138,
-		18, 193,
-		18, 236,
-		26, 276,
-		40, 318,
-		61, 344,
-		64, 360,
-		60, 370,
-		12, 447,
-		11, 538,
-		104, 585,
-		104, 599
-	};
-
-	for (uint i = 0; i < 29; ++i)
-	{
-		p[i].x = PIXEL_TO_METERS(board_points[i * 2 + 0]);
-		p[i].y = PIXEL_TO_METERS(board_points[i * 2 + 1]);
-	}
-
-	board_shape.CreateLoop(p, 29);
-
-	b2FixtureDef board_fixture;
-	board_fixture.shape = &board_shape;
-
-	b->CreateFixture(&board_fixture);
-
-	delete p;
-
 	return true;
 }
 
@@ -279,7 +223,7 @@ update_status ModulePhysics::PostUpdate()
 				{
 					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
 					b2Vec2 pos = f->GetBody()->GetPosition();
-					App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 255, 255, 255);
+					App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 100, 255, 100);
 				}
 				break;
 
