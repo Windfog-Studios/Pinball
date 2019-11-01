@@ -120,20 +120,32 @@ update_status ModuleScene::Update()
 
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
 	}
-	
+	/*
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) 
 	{
-		int impulse = 0;
-		impulse += 30;
-		if (impulse > 300)
-		{
-			impulse = 300;
-		}
-		kicker->body->ApplyForceToCenter(b2Vec2(0, -impulse), 1);
+		int impulse = 100;
+		
+		kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
 		
 	}
-	
+	*/
 
+	static int pow = 0;
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
+
+		pow += 1;
+		/*
+		b2Vec2 impulse = b2Vec2(0, 10);
+		kicker->body->ApplyForceToCenter(impulse, 1);
+		*/
+		if (pow > 100)
+			pow =100;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
+		kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
+		pow = 0;
+	}
+	
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
 		b2Vec2 impulse = b2Vec2(0, -200);
 		left_flipper->body->ApplyForceToCenter(impulse, 1);
@@ -494,8 +506,8 @@ void ModuleScene::initializeInteractiveElements() {
 
 
 	//kicker
-	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+100, 15, 5);
-	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+100, 15, 5);
+	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 15, 5);
+	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 15, 5);
 
 	static_kicker->body->SetType(b2_staticBody);
 
@@ -508,7 +520,7 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.upperTranslation = PIXEL_TO_METERS(12);
 
 	kicker_joint.localAnchorA.Set(0, 0);
-	kicker_joint.localAnchorB.Set(0, 0);
+	kicker_joint.localAnchorB.Set(0, -0.5);
 
 
 	kicker_joint.localAxisA.Set(0, 1);
