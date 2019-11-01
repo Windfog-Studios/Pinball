@@ -38,10 +38,8 @@ bool ModuleScene::Start()
 	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
 	InitializeSceneColliders();
-	
-	initializeFlippers();
 
-	initializekicker();
+	initializeInteractiveElements();
 
 	//player ball
 	ball = App->physics->CreateCircle(336, 400, BALL_SIZE);
@@ -204,11 +202,25 @@ update_status ModuleScene::Update()
 	}
 
 	//blit game elements
+
+	//blit flippers
 	int x, y;
+	SDL_Rect flipper_rect = { 4,13,48,15 };
 	left_flipper->GetPosition(x, y);
-	App->renderer->Blit(flipper_tex, x-5, y-15, NULL, 1.0f, left_flipper->GetRotation());
+	App->renderer->Blit(spritesheet, x , y, &flipper_rect, 1.0f, left_flipper->GetRotation());
 	right_flipper->GetPosition(x, y);
-	App->renderer->Blit(flipper_tex, x - 5, y - 15, NULL, 1.0f,right_flipper->GetRotation());
+	App->renderer->Blit(spritesheet, x, y, &flipper_rect, 1.0f,right_flipper->GetRotation(),SDL_FLIP_HORIZONTAL);
+
+	//blit pans
+	SDL_Rect pan_rect = {62,0,34,34};
+	App->renderer->Blit(spritesheet, 162, 97, &pan_rect);
+	App->renderer->Blit(spritesheet, 216, 103, &pan_rect);
+	App->renderer->Blit(spritesheet, 178, 143, &pan_rect);
+
+	//blit ball
+	SDL_Rect ball_rect = { 130,0,16,16 };
+	ball->GetPosition(x, y);
+	App->renderer->Blit(spritesheet, x, y, &ball_rect);
 
 	// ray -----------------
 	if(ray_on == true)
@@ -416,7 +428,7 @@ void ModuleScene::InitializeSceneColliders() {
 	App->physics->CreateStaticChain(0, 0, right_capsule_points, 16);
 }
 
-void ModuleScene::initializeFlippers() {
+void ModuleScene::initializeInteractiveElements() {
 	int left_flipper_points[10] = {
 	4, 20,
 	7, 14,
@@ -466,10 +478,20 @@ void ModuleScene::initializeFlippers() {
 	right_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(14), PIXEL_TO_METERS(0));
 	right_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
+
+
+	//pans
+	pan1 = App->physics->CreateCircle(180, 115, 16);
+	pan1->body->SetType(b2_staticBody);
+	pan2 = App->physics->CreateCircle(235, 120, 16);
+	pan2->body->SetType(b2_staticBody);
+	pan3 = App->physics->CreateCircle(195, 160, 16);
+	pan3->body->SetType(b2_staticBody);
 }
 
 void ModuleScene::initializekicker() {
-	
+
+	//kicker
 	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+100, 15, 5);
 	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+100, 15, 5);
 
@@ -479,7 +501,7 @@ void ModuleScene::initializekicker() {
 	kicker_joint.bodyB = static_kicker->body;
 	kicker_joint.collideConnected = false;
 	kicker_joint.enableLimit = true;
-	
+
 	kicker_joint.lowerTranslation = PIXEL_TO_METERS(25);
 	kicker_joint.upperTranslation = PIXEL_TO_METERS(40);
 
@@ -490,7 +512,4 @@ void ModuleScene::initializekicker() {
 	kicker_joint.localAxisA.Set(0, -1);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
-
 }
-
-

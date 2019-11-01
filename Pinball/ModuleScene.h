@@ -4,7 +4,7 @@
 #include "p2Point.h"
 #include "Globals.h"
 #include "ModulePhysics.h"
-
+#include "Animation.h"
 #define START_BALL_POSITION_X 338
 #define START_BALL_POSITION_Y 400
 #define BALL_SIZE 6
@@ -24,8 +24,7 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void InitializeSceneColliders();
-	void initializeFlippers();
-	void initializekicker();
+	void initializeInteractiveElements();
 
 public:
 	p2List<PhysBody*> circles;
@@ -41,6 +40,11 @@ public:
 	PhysBody* left_flipper;
 	PhysBody* right_flipper_anchor;
 	PhysBody* right_flipper;
+
+	//pans
+	PhysBody* pan1;
+	PhysBody* pan2;
+	PhysBody* pan3;
 
 	//b2RevoluteJoint* left_flipper_joint = nullptr;
 	b2RevoluteJointDef left_flipper_joint;
