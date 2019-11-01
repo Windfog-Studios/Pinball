@@ -487,9 +487,7 @@ void ModuleScene::initializeInteractiveElements() {
 	pan2->body->SetType(b2_staticBody);
 	pan3 = App->physics->CreateCircle(195, 160, 16);
 	pan3->body->SetType(b2_staticBody);
-}
 
-void ModuleScene::initializekicker() {
 
 	//kicker
 	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+100, 15, 5);
