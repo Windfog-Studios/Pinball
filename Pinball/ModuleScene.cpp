@@ -30,7 +30,7 @@ bool ModuleScene::Start()
 	circle = App->textures->Load("assets/wheel.png"); 
 	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
 	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
-	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png")
+	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
@@ -38,8 +38,8 @@ bool ModuleScene::Start()
 	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
 	InitializeSceneColliders();
-	
-	initializeFlippers();
+
+	initializeInteractiveElements();
 
 	//player ball
 	ball = App->physics->CreateCircle(336, 400, BALL_SIZE);
@@ -186,11 +186,25 @@ update_status ModuleScene::Update()
 	}
 
 	//blit game elements
+
+	//blit flippers
 	int x, y;
+	SDL_Rect flipper_rect = { 4,13,48,15 };
 	left_flipper->GetPosition(x, y);
-	App->renderer->Blit(flipper_tex, x-5, y-15, NULL, 1.0f, left_flipper->GetRotation());
+	App->renderer->Blit(spritesheet, x , y, &flipper_rect, 1.0f, left_flipper->GetRotation());
 	right_flipper->GetPosition(x, y);
-	App->renderer->Blit(flipper_tex, x - 5, y - 15, NULL, 1.0f,right_flipper->GetRotation());
+	App->renderer->Blit(spritesheet, x, y, &flipper_rect, 1.0f,right_flipper->GetRotation(),SDL_FLIP_HORIZONTAL);
+
+	//blit pans
+	SDL_Rect pan_rect = {62,0,34,34};
+	App->renderer->Blit(spritesheet, 162, 97, &pan_rect);
+	App->renderer->Blit(spritesheet, 216, 103, &pan_rect);
+	App->renderer->Blit(spritesheet, 178, 143, &pan_rect);
+
+	//blit ball
+	SDL_Rect ball_rect = { 130,0,16,16 };
+	ball->GetPosition(x, y);
+	App->renderer->Blit(spritesheet, x, y, &ball_rect);
 
 	// ray -----------------
 	if(ray_on == true)
@@ -398,7 +412,7 @@ void ModuleScene::InitializeSceneColliders() {
 	App->physics->CreateStaticChain(0, 0, right_capsule_points, 16);
 }
 
-void ModuleScene::initializeFlippers() {
+void ModuleScene::initializeInteractiveElements() {
 	int left_flipper_points[10] = {
 	4, 20,
 	7, 14,
@@ -447,4 +461,12 @@ void ModuleScene::initializeFlippers() {
 	right_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(14), PIXEL_TO_METERS(0));
 	right_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
+
+	//pans
+	pan1 = App->physics->CreateCircle(180, 115, 16);
+	pan1->body->SetType(b2_staticBody);
+	pan2 = App->physics->CreateCircle(235, 120, 16);
+	pan2->body->SetType(b2_staticBody);
+	pan3 = App->physics->CreateCircle(195, 160, 16);
+	pan3->body->SetType(b2_staticBody);
 }
