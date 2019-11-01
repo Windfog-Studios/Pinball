@@ -52,6 +52,7 @@ bool ModuleScene::CleanUp()
 {
 	//App->physics->world->DestroyJoint(left_revolute_joint);
 	//left_revolute_joint = NULL;
+	LOG("Points: %i", points);
 	LOG("Unloading Intro scene");
 
 	return true;
@@ -257,7 +258,13 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	int x, y;
 
 	App->audio->PlayFx(bonus_fx);
-
+	if (bodyA == ball)
+	{
+		if ((bodyB == pan1) || (bodyB == pan2) || (bodyB == pan3))
+		{
+			points += 30;
+		}
+	}
 	/*
 	if(bodyA)
 	{
