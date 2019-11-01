@@ -25,6 +25,7 @@ public:
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void InitializeSceneColliders();
 	void initializeFlippers();
+	void initializekicker();
 
 public:
 	p2List<PhysBody*> circles;
@@ -44,6 +45,11 @@ public:
 	//b2RevoluteJoint* left_flipper_joint = nullptr;
 	b2RevoluteJointDef left_flipper_joint;
 	b2RevoluteJointDef right_flipper_joint;
+
+	PhysBody* kicker;
+	PhysBody* static_kicker;
+
+	b2PrismaticJointDef kicker_joint;
 
 	PhysBody* sensor;
 	bool sensed;
