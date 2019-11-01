@@ -130,13 +130,13 @@ update_status ModuleScene::Update()
 	*/
 
 	static int pow = 0;
+	static int impulse = 100;
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
 
-		pow += 1;
-		/*
-		b2Vec2 impulse = b2Vec2(0, 10);
-		kicker->body->ApplyForceToCenter(impulse, 1);
-		*/
+		pow += 2;
+		
+		kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
+		
 		if (pow > 100)
 			pow =100;
 	}
@@ -230,6 +230,11 @@ update_status ModuleScene::Update()
 	SDL_Rect ball_rect = { 130,0,16,16 };
 	ball->GetPosition(x, y);
 	App->renderer->Blit(spritesheet, x, y, &ball_rect);
+
+	//kicker
+	SDL_Rect kicker_rect = { 71,50,17,51 }; 
+	kicker->GetPosition(x, y);
+	App->renderer->Blit(spritesheet, x, y, &kicker_rect);
 
 	// ray -----------------
 	if(ray_on == true)
