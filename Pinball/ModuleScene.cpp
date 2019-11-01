@@ -30,7 +30,7 @@ bool ModuleScene::Start()
 	circle = App->textures->Load("assets/wheel.png"); 
 	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
 	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
-	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png")
+	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
@@ -121,23 +121,22 @@ update_status ModuleScene::Update()
 
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
 	}
-
-	int force = 0;
+	int impulse = 0;
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) 
 	{
-		force += 30;
-		if (force > 300)
+		impulse += 30;
+		if (impulse > 300)
 		{
-			force = 300;
+			impulse = 300;
 		}
 
 	}
 	
 	if (App->input->GetKey(SDL_SCANCODE_DOWN == KEY_UP))
 	{
-		b2Vec2 force = b2Vec2(0, -200);
-		kicker->body->ApplyForceToCenter(force, 1);
+		kicker->body->ApplyForceToCenter(b2Vec2(0, -impulse), 1);
 	}
+	
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
 		b2Vec2 impulse = b2Vec2(0, -200);
@@ -469,14 +468,10 @@ void ModuleScene::initializeFlippers() {
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
 }
 
-}
-
-
-
 void ModuleScene::initializekicker() {
 	
-	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_X, 15, 5);
-	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_X, 15, 5);
+	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+100, 15, 5);
+	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+100, 15, 5);
 
 	static_kicker->body->SetType(b2_staticBody);
 
