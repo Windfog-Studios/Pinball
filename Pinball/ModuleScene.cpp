@@ -215,14 +215,16 @@ bool ModuleScene::Start()
 		App->physics->CreateStaticChain(0, 0, right_l_points, 12);
 		App->physics->CreateStaticChain(0, 0, left_capsule_points, 16);
 		App->physics->CreateStaticChain(0, 0, right_capsule_points, 16);
-		left_bumper_anchor = App->physics->CreateCircle(110, 530, 5);
-		left_bumper_anchor->body->SetType(b2_staticBody);
-		left_bumper = App->physics->CreateChain(80, 548, left_bumper_points, 10);
+		//bumpers
+		left_bumper = App->physics->CreateChain(95, 548, left_bumper_points, 10);
 		left_bumper->body->SetType(b2_staticBody);
-		right_bumper_anchor = App->physics->CreateCircle(300, 548, 5);
-		right_bumper_anchor->body->SetType(b2_staticBody);
-		right_bumper = App->physics->CreateChain(300, 10, right_bumper_points, 10);
+		right_bumper = App->physics->CreateChain(170, 548, right_bumper_points, 10);
 		right_bumper->body->SetType(b2_staticBody);
+		//bumper anchors
+		left_bumper_anchor = App->physics->CreateCircle(108, 557, 3);
+		left_bumper_anchor->body->SetType(b2_staticBody);
+		right_bumper_anchor = App->physics->CreateCircle(215, 557, 3);
+		right_bumper_anchor->body->SetType(b2_staticBody);
 
 	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
@@ -231,7 +233,6 @@ bool ModuleScene::Start()
 	//set bumpers
 	b2RevoluteJointDef left_bumper_joint;
 	left_bumper_joint.Initialize(left_bumper_anchor->body, left_bumper->body, left_bumper_anchor->body->GetWorldCenter());
-	//left_bumper_joint.localAnchorA.Set(x,y);
 	left_bumper_joint.lowerAngle = -0.25f * b2_pi;
 	left_bumper_joint.upperAngle = 0.25f * b2_pi;
 	left_bumper_joint.enableLimit = true;
@@ -329,7 +330,7 @@ update_status ModuleScene::Update()
 
 	//draw scene
 
-	App->renderer->Blit(board_tex, 0, 0);
+	//App->renderer->Blit(board_tex, 0, 0);
 
 	while(c != NULL)
 	{
