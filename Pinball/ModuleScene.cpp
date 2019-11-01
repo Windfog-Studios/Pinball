@@ -119,20 +119,17 @@ update_status ModuleScene::Update()
 
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
 	}
-	int impulse = 0;
+	
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) 
 	{
+		int impulse = 0;
 		impulse += 30;
 		if (impulse > 300)
 		{
 			impulse = 300;
 		}
-
-	}
-	
-	if (App->input->GetKey(SDL_SCANCODE_DOWN == KEY_UP))
-	{
 		kicker->body->ApplyForceToCenter(b2Vec2(0, -impulse), 1);
+		
 	}
 	
 
@@ -500,14 +497,14 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.collideConnected = false;
 	kicker_joint.enableLimit = true;
 
-	kicker_joint.lowerTranslation = PIXEL_TO_METERS(25);
-	kicker_joint.upperTranslation = PIXEL_TO_METERS(40);
+	kicker_joint.lowerTranslation = PIXEL_TO_METERS(10);
+	kicker_joint.upperTranslation = PIXEL_TO_METERS(12);
 
 	kicker_joint.localAnchorA.Set(0, 0);
 	kicker_joint.localAnchorB.Set(0, 0);
 
 
-	kicker_joint.localAxisA.Set(0, -1);
+	kicker_joint.localAxisA.Set(0, 1);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
 }
