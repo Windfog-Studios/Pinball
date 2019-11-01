@@ -29,7 +29,8 @@ bool ModuleScene::Start()
 
 	circle = App->textures->Load("assets/wheel.png"); 
 	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
-
+	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
+	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png")
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
@@ -147,7 +148,7 @@ update_status ModuleScene::Update()
 
 	//draw scene
 
-	//App->renderer->Blit(board_tex, 0, 0);
+	App->renderer->Blit(board_tex, 0, 0);
 
 	while(c != NULL)
 	{
@@ -183,6 +184,13 @@ update_status ModuleScene::Update()
 		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
+
+	//blit game elements
+	int x, y;
+	left_flipper->GetPosition(x, y);
+	App->renderer->Blit(flipper_tex, x-5, y-15, NULL, 1.0f, left_flipper->GetRotation());
+	right_flipper->GetPosition(x, y);
+	App->renderer->Blit(flipper_tex, x - 5, y - 15, NULL, 1.0f,right_flipper->GetRotation());
 
 	// ray -----------------
 	if(ray_on == true)
@@ -407,9 +415,9 @@ void ModuleScene::initializeFlippers() {
 	};
 
 	//flippers
-	left_flipper = App->physics->CreateRectangle(105, 547, 40, 10);
+	left_flipper = App->physics->CreateRectangle(107, 547, 45, 10);
 	//left_flipper->body->SetType(b2_staticBody);
-	right_flipper = App->physics->CreateRectangle(180, 547, 40, 10);
+	right_flipper = App->physics->CreateRectangle(180, 547, 45, 10);
 	//right_flipper->body->SetType(b2_staticBody);
 
 	//flippers anchors
@@ -425,7 +433,7 @@ void ModuleScene::initializeFlippers() {
 	left_flipper_joint.lowerAngle = -25 * DEGTORAD;
 	left_flipper_joint.upperAngle = 35 * DEGTORAD;
 	left_flipper_joint.enableLimit = true;
-	left_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(-10), PIXEL_TO_METERS(0));
+	left_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(-14), PIXEL_TO_METERS(0));
 	left_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* left_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&left_flipper_joint);
 
@@ -436,7 +444,7 @@ void ModuleScene::initializeFlippers() {
 	right_flipper_joint.lowerAngle = -35 * DEGTORAD;
 	right_flipper_joint.upperAngle = 25 * DEGTORAD;
 	right_flipper_joint.enableLimit = true;
-	right_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(10), PIXEL_TO_METERS(0));
+	right_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(14), PIXEL_TO_METERS(0));
 	right_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
 }
