@@ -27,6 +27,9 @@ public:
 	void initializeInteractiveElements();
 
 public:
+
+	int points = 0;
+
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> boxes;
 	p2List<PhysBody*> ricks;
