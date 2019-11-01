@@ -122,7 +122,11 @@ update_status ModuleScene::Update()
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) left_flipper_joint;
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
+		b2Vec2 force = b2Vec2(0,- 200);
+		left_flipper->body->ApplyForceToCenter(force, 1);
+		left_flipper_joint.lowerAngle = 0.25 * b2_pi;
+	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
 
@@ -147,7 +151,7 @@ update_status ModuleScene::Update()
 		int x, y;
 		c->data->GetPosition(x, y);
 		if(c->data->Contains(App->input->GetMouseX(), App->input->GetMouseY()))
-			App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 
@@ -157,7 +161,7 @@ update_status ModuleScene::Update()
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
+		//App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
 		if(ray_on)
 		{
 			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
@@ -189,6 +193,8 @@ update_status ModuleScene::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
+
+	LOG("left angle: %.2f", left_flipper->body->GetAngle());
 
 	return UPDATE_CONTINUE;
 }
@@ -415,9 +421,9 @@ void ModuleScene::initializeFlippers() {
 	left_flipper_joint.enableLimit = true;
 	left_flipper_joint.lowerAngle = -0.25f * b2_pi;
 	left_flipper_joint.upperAngle = 0.25f * b2_pi;
-	//joint.maxMotorTorque = 10.0f;
-	//joint.motorSpeed = 1.0f;
-	//joint.enableMotor = true;
+	left_flipper_joint.motorSpeed = -10.0f;
+	left_flipper_joint.maxMotorTorque = 10.0f;
+	left_flipper_joint.enableMotor = true;
 	b2RevoluteJoint* left_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&left_flipper_joint);
 
 	right_flipper_joint.Initialize(right_flipper_anchor->body, right_flipper->body, right_flipper_anchor->body->GetWorldCenter());
