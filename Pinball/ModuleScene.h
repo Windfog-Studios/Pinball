@@ -50,6 +50,11 @@ public:
 	b2RevoluteJointDef left_flipper_joint;
 	b2RevoluteJointDef right_flipper_joint;
 
+	PhysBody* kicker;
+	PhysBody* static_kicker;
+
+	b2PrismaticJointDef kicker_joint;
+
 	PhysBody* sensor;
 	bool sensed;
 

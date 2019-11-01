@@ -43,7 +43,7 @@ bool ModuleScene::Start()
 
 	//player ball
 	ball = App->physics->CreateCircle(336, 400, BALL_SIZE);
-
+	
 	return ret;
 }
 
@@ -70,7 +70,7 @@ update_status ModuleScene::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), BALL_SIZE));
+		circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
 		circles.getLast()->data->listener = this;
 	}
 
@@ -118,6 +118,23 @@ update_status ModuleScene::Update()
 		};
 
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
+	}
+
+	int force = 0;
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) 
+	{
+		force += 30;
+		if (force > 300)
+		{
+			force = 300;
+		}
+
+	}
+	
+	if (App->input->GetKey(SDL_SCANCODE_DOWN == KEY_UP))
+	{
+		b2Vec2 force = b2Vec2(0, -200);
+		kicker->body->ApplyForceToCenter(force, 1);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
@@ -451,6 +468,7 @@ void ModuleScene::initializeInteractiveElements() {
 	left_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* left_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&left_flipper_joint);
 
+
 	//right flipper movement
 	right_flipper_joint.bodyA = right_flipper->body;
 	right_flipper_joint.bodyB = right_flipper_anchor->body;
@@ -469,4 +487,26 @@ void ModuleScene::initializeInteractiveElements() {
 	pan2->body->SetType(b2_staticBody);
 	pan3 = App->physics->CreateCircle(195, 160, 16);
 	pan3->body->SetType(b2_staticBody);
+
+	//kicker
+	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_X, 15, 5);
+	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_X, 15, 5);
+
+	static_kicker->body->SetType(b2_staticBody);
+
+	kicker_joint.bodyA = kicker->body;
+	kicker_joint.bodyB = static_kicker->body;
+	kicker_joint.collideConnected = false;
+	kicker_joint.enableLimit = true;
+
+	kicker_joint.lowerTranslation = PIXEL_TO_METERS(25);
+	kicker_joint.upperTranslation = PIXEL_TO_METERS(40);
+
+	kicker_joint.localAnchorA.Set(0, 0);
+	kicker_joint.localAnchorB.Set(0, 0);
+
+
+	kicker_joint.localAxisA.Set(0, -1);
+
+	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
 }
