@@ -3,13 +3,15 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "Globals.h"
+#include "ModulePhysics.h"
 
 #define START_BALL_POSITION_X 338
 #define START_BALL_POSITION_Y 400
-#define BALL_SIZE 7
+#define BALL_SIZE 6
 
 
 class PhysBody;
+struct b2RevoluteJoint;
 
 class ModuleScene : public Module
 {
@@ -21,6 +23,8 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
+	void InitializeSceneColliders();
+	void initializeFlippers();
 
 public:
 	p2List<PhysBody*> circles;
@@ -29,12 +33,17 @@ public:
 	p2List<PhysBody*> board;
 
 	PhysBody* triangle1;
+	PhysBody* ball;
 
-	//bumpers
-	PhysBody* left_bumper_anchor;
-	PhysBody* left_bumper;
-	PhysBody* right_bumper_anchor;
-	PhysBody* right_bumper;
+	//flippers
+	PhysBody* left_flipper_anchor;
+	PhysBody* left_flipper;
+	PhysBody* right_flipper_anchor;
+	PhysBody* right_flipper;
+
+	//b2RevoluteJoint* left_flipper_joint = nullptr;
+	b2RevoluteJointDef left_flipper_joint;
+	b2RevoluteJointDef right_flipper_joint;
 
 	PhysBody* sensor;
 	bool sensed;
