@@ -43,9 +43,6 @@ bool ModuleScene::Start()
 	//player ball
 	ball = App->physics->CreateCircle(336, 400, BALL_SIZE);
 
-	//kicker
-	kicker = App->physics->CreateRectangle(336, 404, 10, 10);
-
 	return ret;
 }
 
@@ -123,9 +120,6 @@ update_status ModuleScene::Update()
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
-		b2Vec2 force = b2Vec2(0,- 200);
-		left_flipper->body->ApplyForceToCenter(force, 1);
-		left_flipper_joint.lowerAngle = 30 * DEGTORAD;
 	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
@@ -193,8 +187,6 @@ update_status ModuleScene::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
-
-	LOG("left angle: %.2f", left_flipper->body->GetAngle());
 
 	return UPDATE_CONTINUE;
 }
@@ -375,20 +367,6 @@ void ModuleScene::InitializeSceneColliders() {
 	226, 85,
 	222, 81
 	};
-	int left_flipper_points[10] = {
-	6, 13,
-	7, 6,
-	12, 2,
-	52, 24,
-	50, 27
-	};
-	int right_flipper_points[10] = {
-	6, 24,
-	45, 2,
-	52, 6,
-	52, 13,
-	8, 27
-	};
 
 	//collider creation
 	App->physics->CreateStaticChain(0, 0, board_points, 58);
@@ -401,6 +379,23 @@ void ModuleScene::InitializeSceneColliders() {
 	App->physics->CreateStaticChain(0, 0, right_l_points, 12);
 	App->physics->CreateStaticChain(0, 0, left_capsule_points, 16);
 	App->physics->CreateStaticChain(0, 0, right_capsule_points, 16);
+}
+
+void ModuleScene::initializeFlippers() {
+	int left_flipper_points[10] = {
+	4, 20,
+	7, 14,
+	53, 18,
+	50, 23,
+	5, 27
+	};
+	int right_flipper_points[10] = {
+	48, 15,
+	52, 22,
+	49, 29,
+	4, 25,
+	3, 21
+	};
 
 	//flippers
 	left_flipper = App->physics->CreateChain(95, 547, left_flipper_points, 10);
@@ -413,24 +408,7 @@ void ModuleScene::InitializeSceneColliders() {
 	left_flipper_anchor->body->SetType(b2_staticBody);
 	right_flipper_anchor = App->physics->CreateCircle(215, 557, 3);
 	right_flipper_anchor->body->SetType(b2_staticBody);
-}
 
-void ModuleScene::initializeFlippers() {
-	//left_flipper_joint.Initialize(left_flipper_anchor->body, left_flipper->body, left_flipper_anchor->body->GetWorldCenter());
-	left_flipper_joint.bodyA = left_flipper->body;
-	left_flipper_joint.bodyB = left_flipper_anchor->body;
-	left_flipper_joint.referenceAngle = 0;
-	left_flipper_joint.enableLimit = true;
-	left_flipper_joint.lowerAngle = -45 * DEGTORAD;
-	left_flipper_joint.upperAngle = 45 * DEGTORAD;
-	left_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(15), PIXEL_TO_METERS(10));
-	left_flipper_joint.localAnchorB.Set(0, 0);
-	b2RevoluteJoint* left_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&left_flipper_joint);
-
-	right_flipper_joint.Initialize(right_flipper_anchor->body, right_flipper->body, right_flipper_anchor->body->GetWorldCenter());
-	right_flipper_joint.referenceAngle = 0;
-	right_flipper_joint.enableLimit = true;
-	right_flipper_joint.lowerAngle = -45 * DEGTORAD;
-	right_flipper_joint.upperAngle = 45 * DEGTORAD;
-	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
+	//left flipper movement
+	left_flipper_joint.Initialize(left_flipper_anchor->body, left_flipper->body, left_flipper_anchor->body->GetWorldCenter());
 }
