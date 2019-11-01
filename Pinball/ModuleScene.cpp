@@ -120,6 +120,9 @@ update_status ModuleScene::Update()
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
+		b2Vec2 force = b2Vec2(0, -200);
+		left_flipper->body->ApplyForceToCenter(force, 1);
+		left_flipper_joint.lowerAngle = 45 * DEGTORAD;
 	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
@@ -398,7 +401,7 @@ void ModuleScene::initializeFlippers() {
 	};
 
 	//flippers
-	left_flipper = App->physics->CreateChain(95, 547, left_flipper_points, 10);
+	left_flipper = App->physics->CreateRectangle(60, 547, 20, 5);
 	//left_flipper->body->SetType(b2_staticBody);
 	right_flipper = App->physics->CreateChain(170, 547, right_flipper_points, 10);
 	//right_flipper->body->SetType(b2_staticBody);
@@ -410,5 +413,13 @@ void ModuleScene::initializeFlippers() {
 	right_flipper_anchor->body->SetType(b2_staticBody);
 
 	//left flipper movement
-	left_flipper_joint.Initialize(left_flipper_anchor->body, left_flipper->body, left_flipper_anchor->body->GetWorldCenter());
+	left_flipper_joint.bodyA = left_flipper->body;
+	left_flipper_joint.bodyB = left_flipper_anchor->body;
+	left_flipper_joint.referenceAngle = 0;
+	left_flipper_joint.lowerAngle = -45 * DEGTORAD;
+	left_flipper_joint.upperAngle = 45 * DEGTORAD;
+	left_flipper_joint.enableLimit = true;
+	left_flipper_joint.localAnchorA.Set(PIXEL_TO_METERS(-10), PIXEL_TO_METERS(0));
+	left_flipper_joint.localAnchorB.Set(0, 0);
+	b2RevoluteJoint* left_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&left_flipper_joint);
 }
