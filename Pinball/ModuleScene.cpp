@@ -13,8 +13,10 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-	initial_position.x = PIXEL_TO_METERS(START_BALL_POSITION_X);
-	initial_position.y = PIXEL_TO_METERS(START_BALL_POSITION_Y);
+	initial_position.x = START_BALL_POSITION_X;
+	initial_position.y = START_BALL_POSITION_Y;
+	//initial_position.x = 205;
+	//initial_position.y = 250;
 }
 
 ModuleScene::~ModuleScene()
@@ -37,7 +39,6 @@ bool ModuleScene::Start()
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
 	point_numbers = App->fonts->Load("assets/sprites/Point_numbers.png", "0123456789", 1);
 	
-
 	//sounds and music
 
 	//App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
@@ -52,7 +53,7 @@ bool ModuleScene::Start()
 	initializeInteractiveElements();
 
 	//player ball
-	ball = App->physics->CreateCircle(336, 400, BALL_SIZE);
+	ball = App->physics->CreateCircle(initial_position.x, initial_position.y, BALL_SIZE);
 	
 	return ret;
 }
@@ -69,9 +70,10 @@ bool ModuleScene::CleanUp()
 
 update_status ModuleScene::Update()
 {
+
 	if (lives > 0) 
 	{
-		if (move_to_origin) {
+		if (change_ball_position) {
 			ResetBall();
 			move_to_origin = false;
 		}
@@ -645,8 +647,9 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (SDL_GetTicks() - stove_contact_moment > stove_1_time * 1000)
 			{
-				ball->body->SetLinearVelocity(b2Vec2(0, 20));
+				ball->body->SetLinearVelocity(b2Vec2(-8, 12));
 				center_body = nullptr;
+				stove_holding = false;
 			}
 			else
 			{
@@ -666,8 +669,9 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (SDL_GetTicks() - stove_contact_moment > stove_1_time * 1000)
 			{
-				ball->body->SetLinearVelocity(b2Vec2(0, 20));
+				ball->body->SetLinearVelocity(b2Vec2(-22, -20));
 				center_body = nullptr;
+				stove_holding = false;
 			}
 			else
 			{
@@ -685,7 +689,7 @@ void ModuleScene::NotOnCollision(PhysBody* bodyA, PhysBody* bodyB) {
 }
 
 void ModuleScene::ResetBall() {
-	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(START_BALL_POSITION_X), PIXEL_TO_METERS(START_BALL_POSITION_Y)),0);
+	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(START_BALL_POSITION_X),PIXEL_TO_METERS(START_BALL_POSITION_Y)),0);
 	ball->body->SetLinearVelocity(b2Vec2_zero);
 	ball->body->SetAngularVelocity(0);
 }
