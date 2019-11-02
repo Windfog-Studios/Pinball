@@ -12,6 +12,8 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
+	initial_position.x = PIXEL_TO_METERS(START_BALL_POSITION_X);
+	initial_position.y = PIXEL_TO_METERS(START_BALL_POSITION_Y);
 }
 
 ModuleScene::~ModuleScene()
@@ -32,11 +34,17 @@ bool ModuleScene::Start()
 	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 
-	//sounds
+	//sounds and music
+
+	//App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
 	pan_fx = App->audio->LoadFx("assets/sound/pan.wav");
 	triangle_fx = App->audio->LoadFx("assets/sound/triangle.wav");
-	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	ball_lost_fx = App->audio->LoadFx("assets/sound/ball_lost.wav");
+	flipper_fx = App->audio->LoadFx("assets/sound/flipper.wav");
+	//sensors
+	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH/2, 25);
+	bottom_sensor->listener = this;
 
 	InitializeSceneColliders();
 
@@ -62,7 +70,6 @@ bool ModuleScene::CleanUp()
 // Update: draw background
 update_status ModuleScene::Update()
 {
-
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		ray_on = !ray_on;
@@ -75,10 +82,11 @@ update_status ModuleScene::Update()
 		//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
 		//circles.getLast()->data->listener = this;
 		b2Vec2 position;
-		position.x = PIXEL_TO_METERS(START_BALL_POSITION_X/4);
-		position.y = PIXEL_TO_METERS(350);
-		ball->body->SetAngularVelocity(0);
+		position.x = PIXEL_TO_METERS(START_BALL_POSITION_X);
+		position.y = PIXEL_TO_METERS(START_BALL_POSITION_Y);
 		ball->body->SetTransform(position, 0);
+		ball->body->SetLinearVelocity(b2Vec2_zero);
+		ball->body->SetAngularVelocity(0);
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
@@ -126,15 +134,6 @@ update_status ModuleScene::Update()
 
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
 	}
-	/*
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) 
-	{
-		int impulse = 100;
-		
-		kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
-		
-	}
-	*/
 
 	static int pow = 0;
 	static int impulse = 100;
@@ -156,12 +155,14 @@ update_status ModuleScene::Update()
 		b2Vec2 impulse = b2Vec2(0, -200);
 		left_flipper->body->ApplyForceToCenter(impulse, 1);
 		left_flipper_joint.lowerAngle = 45 * DEGTORAD;
+		App->audio->PlayFx(flipper_fx);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
 		b2Vec2 impulse = b2Vec2(0, -200);
 		right_flipper->body->ApplyForceToCenter(impulse, 1);
 		right_flipper_joint.lowerAngle = 45 * DEGTORAD;
+		App->audio->PlayFx(flipper_fx);
 	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
@@ -257,40 +258,6 @@ update_status ModuleScene::Update()
 	}
 
 	return UPDATE_CONTINUE;
-}
-
-void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
-{
-	int x, y;
-	//cases in which bodyA == ball
-	LOG("");
-	if (bodyA == ball)
-	{
-		if ((bodyB == pan1) || (bodyB == pan2) || (bodyB == pan3))
-		{
-			points += 30;
-			App->audio->PlayFx(pan_fx);
-		}
-
-		if ((bodyB == left_triangle) || (bodyB == right_triangle))
-		{
-			points += 30;
-			App->audio->PlayFx(triangle_fx);
-		}
-	}
-
-	//inverse cases
-	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
-	{
-		App->audio->PlayFx(pan_fx);
-		points += 30;
-	}
-
-	if ((bodyA == left_triangle)||(bodyA == right_triangle))
-	{
-		App->audio->PlayFx(triangle_fx);
-		points += 30;
-	}
 }
 
 void ModuleScene::InitializeSceneColliders() {
@@ -560,4 +527,61 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.localAxisA.Set(0, 1);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
+}
+
+void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
+{
+	int x, y;
+
+	//cases in which bodyA == ball
+	LOG("");
+
+	if ((bodyA == left_flipper)|(bodyA == right_flipper))
+	{
+		ball->body->SetLinearVelocity(b2Vec2(6, 6));
+	}
+
+	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
+	{
+		App->audio->PlayFx(pan_fx);
+		points += 30;
+		ball->body->SetLinearVelocity(b2Vec2(10, 10));
+	}
+
+	if ((bodyA == left_triangle) || (bodyA == right_triangle))
+	{
+		App->audio->PlayFx(triangle_fx);
+		points += 30;
+	}
+
+	if (bodyA == bottom_sensor)
+	{
+		//ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(START_BALL_POSITION_X), PIXEL_TO_METERS(START_BALL_POSITION_Y)),0);
+		//ball->body->SetLinearVelocity(b2Vec2_zero);
+		App->audio->PlayFx(ball_lost_fx);
+	}
+
+	/*
+if (bodyA == ball)
+{
+	if ((bodyB == pan1) || (bodyB == pan2) || (bodyB == pan3))
+	{
+		points += 30;
+		App->audio->PlayFx(pan_fx);
+	}
+
+	if ((bodyB == left_triangle) || (bodyB == right_triangle))
+	{
+		points += 30;
+		App->audio->PlayFx(triangle_fx);
+	}
+
+	if (bodyB == bottom_sensor)
+	{
+		//ball->body->SetTransform(initial_position, 0);
+		//ball->body->SetLinearVelocity(b2Vec2_zero);
+	}
+
+}
+*/
 }

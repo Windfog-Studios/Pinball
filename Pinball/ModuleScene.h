@@ -29,6 +29,7 @@ public:
 public:
 
 	int points = 0;
+	b2Vec2 initial_position;
 
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> boxes;
@@ -67,7 +68,8 @@ public:
 
 	b2PrismaticJointDef kicker_joint;
 
-	PhysBody* sensor;
+	//sensors
+	PhysBody* bottom_sensor;
 	bool sensed;
 
 	//sprites
@@ -82,6 +84,8 @@ public:
 	uint bonus_fx;
 	uint pan_fx;
 	uint triangle_fx;
+	uint ball_lost_fx;
+	uint flipper_fx;
 
 	p2Point<int> ray;
 	bool ray_on;
