@@ -6,6 +6,7 @@
 #include "ModuleTextures.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
+#include "ModuleFonts.h"
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -36,6 +37,7 @@ bool ModuleScene::Start()
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
+	point_numbers = App->fonts->Load("assets/sprites/Point_numbers.png", "0123456789", 1);
 	
 	//sounds and music
 

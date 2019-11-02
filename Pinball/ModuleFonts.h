@@ -2,6 +2,8 @@
 #define __ModuleFonts_H__
 
 #include "Module.h"
+#include "Globals.h"
+#include "p2List.h"
 #include "SDL\include\SDL_pixels.h"
 
 #define MAX_FONTS 10

@@ -104,8 +104,14 @@ public:
 
 	int stove_1_time = 2;
 	int stove_2_time = 2;
+<<<<<<< HEAD
 	bool sensor_holding = false;
 	int sensor_contact_moment = 0;
+=======
+	bool stove_holding = false;
+	int stove_contact_moment = 0;
+	int point_numbers = 0;
+>>>>>>> e2940b5eef488d228c7eedaf3506646fe90396f3
 
 
 	PhysBody* center_body = nullptr;
