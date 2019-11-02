@@ -7,6 +7,7 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 #include "ModuleFonts.h"
+#include <iostream>
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -37,7 +38,7 @@ bool ModuleScene::Start()
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
-	point_numbers = App->fonts->Load("assets/sprites/Point_numbers.png", "0123456789", 1);
+	Point_numbers = App->fonts->Load("assets/sprites/Point_numbers.png", "9876543210", 1);
 	
 	//sounds and music
 
@@ -271,23 +272,24 @@ update_status ModuleScene::Update()
 
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
-	App->renderer->Blit(letters, 370, 350, &letters_rect);
+	
 
 	//blit letters 2
-	/*
 	SDL_Rect letters_rect2 = { 2, 19, 208, 181 };
-	App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
-	*/
+	
+	
 
 	//play letters
 	SDL_Rect play_rect = { 0, 386, 60, 18 };
-	App->renderer->Blit(spritesheet, 450, 546, &play_rect);
 
 	//replay letters
+	SDL_Rect restart_rect = { 0, 424, 118, 18 };
+	
 	/*
-	SDL_Rect replay_rect = { 0, 424, 92, 18 };
-	App->renderer->Blit(spritesheet, 430, 546, &replay_rect);
+	sprintf_s(point_text, 10, "%7d", player_point);
+	App->fonts->BlitText(77, 8, Point_numbers, point_text);
 	*/
+	
 
 	// ray -----------------
 	if(ray_on == true)
@@ -302,9 +304,32 @@ update_status ModuleScene::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
-	if (lives > 2) App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
-	if (lives > 1) App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
-	if (lives > 0) App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+	if (lives > 2)
+	{
+		App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
+		App->renderer->Blit(letters, 370, 350, &letters_rect);
+	}
+	if (lives > 1 && lives < 3)
+	{
+		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
+		App->renderer->Blit(letters, 370, 350, &letters_rect);
+	}
+	if (lives > 0 && lives < 2)
+	{
+		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
+		App->renderer->Blit(letters, 370, 350, &letters_rect);
+	}
+	if (lives < 1)
+	{
+		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
+		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
+	}
 
 	return UPDATE_CONTINUE;
 }

@@ -92,7 +92,7 @@ public:
 	SDL_Texture* spritesheet;
 	SDL_Texture* letters;
 	SDL_Texture* letters_2;
-	
+		
 	//fx
 	bool playing_left_flipper_fx;
 	bool playing_right_flipper_fx;
@@ -108,7 +108,9 @@ public:
 	int sensor_contact_moment = 0;
 	bool stove_holding = false;
 	int stove_contact_moment = 0;
-	int point_numbers = 0;
+	int Point_numbers = 0;
+	char point_text[10];
+	int player_point = 0;
 
 	PhysBody* center_body = nullptr;
 
