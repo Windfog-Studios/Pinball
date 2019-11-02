@@ -14,10 +14,10 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-	//initial_position.x = START_BALL_POSITION_X;
-	//initial_position.y = START_BALL_POSITION_Y;
-	initial_position.x = 80;
-	initial_position.y = 450;
+	initial_position.x = START_BALL_POSITION_X;
+	initial_position.y = START_BALL_POSITION_Y;
+	//initial_position.x = 80;
+	//initial_position.y = 450;
 }
 
 ModuleScene::~ModuleScene()
@@ -722,11 +722,11 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	else {center_body = nullptr;}
 	if (bodyA == left_triangle_sensor)
 	{
-		ball->body->SetLinearVelocity(b2Vec2(6, -6));
+		ball->body->SetLinearVelocity(b2Vec2(8, -8));
 	}
 
 	if (bodyA == right_triangle_sensor) {
-		ball->body->SetLinearVelocity(b2Vec2(-6, -6));
+		ball->body->SetLinearVelocity(b2Vec2(-8, -8));
 	}
 }
 
