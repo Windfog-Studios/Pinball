@@ -71,8 +71,12 @@ update_status ModuleScene::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
-		circles.getLast()->data->listener = this;
+		//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
+		//circles.getLast()->data->listener = this;
+		b2Vec2 position;
+		position.x = PIXEL_TO_METERS(START_BALL_POSITION_X/2);
+		position.y = PIXEL_TO_METERS(30);
+		ball->body->SetTransform(position, 0);
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
@@ -257,26 +261,31 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
 
-	App->audio->PlayFx(bonus_fx);
+	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
+	{
+		App->audio->PlayFx(bonus_fx);
+		points += 30;
+	}
+
 	if (bodyA == ball)
 	{
 		if ((bodyB == pan1) || (bodyB == pan2) || (bodyB == pan3))
 		{
 			points += 30;
+			App->audio->PlayFx(bonus_fx);
 		}
 	}
-	/*
 	if(bodyA)
 	{
 		bodyA->GetPosition(x, y);
 		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
 	}
 
-	if(bodyB)
+	if (bodyB)
 	{
 		bodyB->GetPosition(x, y);
 		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}*/
+	}
 }
 
 void ModuleScene::InitializeSceneColliders() {
@@ -504,10 +513,13 @@ void ModuleScene::initializeInteractiveElements() {
 	//pans
 	pan1 = App->physics->CreateCircle(180, 115, 16);
 	pan1->body->SetType(b2_staticBody);
+	pan1->listener = this;
 	pan2 = App->physics->CreateCircle(235, 120, 16);
 	pan2->body->SetType(b2_staticBody);
+	pan2->listener = this;
 	pan3 = App->physics->CreateCircle(195, 160, 16);
 	pan3->body->SetType(b2_staticBody);
+	pan3->listener = this;
 
 
 	//kicker
