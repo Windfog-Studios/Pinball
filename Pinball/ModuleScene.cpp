@@ -571,6 +571,14 @@ void ModuleScene::initializeInteractiveElements() {
 	drain_sensor = App->physics->CreateCircleSensor(96, 178, 10);
 	drain_sensor->listener = this;
 
+	stove_1_sensor = App->physics->CreateCircleSensor(214, 241, 10);
+	stove_1_sensor->listener = this;
+
+	stove_2_sensor = App->physics->CreateCircleSensor(299, 363, 10);
+	stove_2_sensor->listener = this;
+
+	restart_sensor = App->physics->CreateRectangleSensor(480, 555, 210, 40);
+
 }
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
