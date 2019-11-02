@@ -103,6 +103,7 @@ public:
 	int stove_2_time = 2;
 	bool stove_holding = false;
 	int stove_contact_moment = 0;
+	int point_numbers = 0;
 
 
 	PhysBody* center_body = nullptr;
