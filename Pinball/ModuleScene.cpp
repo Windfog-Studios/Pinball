@@ -14,10 +14,10 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-	initial_position.x = START_BALL_POSITION_X;
-	initial_position.y = START_BALL_POSITION_Y;
-	//initial_position.x = 95;
-	//initial_position.y = 180;
+	//initial_position.x = START_BALL_POSITION_X;
+	//initial_position.y = START_BALL_POSITION_Y;
+	initial_position.x = 80;
+	initial_position.y = 450;
 }
 
 ModuleScene::~ModuleScene()
@@ -547,15 +547,15 @@ void ModuleScene::initializeInteractiveElements() {
 	};
 
 	//flippers
-	left_flipper = App->physics->CreateRectangle(107, 547, 45, 10);
+	left_flipper = App->physics->CreateRectangle(108, 548, 45, 10);
 	//left_flipper->body->SetType(b2_staticBody);
-	right_flipper = App->physics->CreateRectangle(180, 547, 45, 10);
+	right_flipper = App->physics->CreateRectangle(179, 548, 45, 10);
 	//right_flipper->body->SetType(b2_staticBody);
 
 	//flippers anchors
-	left_flipper_anchor = App->physics->CreateCircle(108, 557, 3);
+	left_flipper_anchor = App->physics->CreateCircle(110, 560, 3);
 	left_flipper_anchor->body->SetType(b2_staticBody);
-	right_flipper_anchor = App->physics->CreateCircle(216, 557, 3);
+	right_flipper_anchor = App->physics->CreateCircle(214, 560, 3);
 	right_flipper_anchor->body->SetType(b2_staticBody);
 
 	//left flipper movement
@@ -629,6 +629,13 @@ void ModuleScene::initializeInteractiveElements() {
 
 	restart_sensor = App->physics->CreateRectangleSensor(480, 555, 210, 40);
 
+	left_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
+	left_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(82), PIXEL_TO_METERS(490)), 60 * DEGTORAD);
+	left_triangle_sensor->listener = this;
+
+	right_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
+	right_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(240), PIXEL_TO_METERS(490)), -60 * DEGTORAD);
+	right_triangle_sensor->listener = this;
 }
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
@@ -638,7 +645,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	//cases in which bodyA == ball
 	LOG("");
 
-	if ((bodyA == left_flipper)|(bodyA == right_flipper))
+	if ((bodyA == left_flipper) | (bodyA == right_flipper))
 	{
 		ball->body->SetLinearVelocity(b2Vec2(6, 6));
 	}
@@ -675,73 +682,87 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		//App->audio->PlayFx();
 	}
 
-	if (bodyA == drain_sensor)
-	{
-		if (sensor_holding == false) {
-			sensor_contact_moment = SDL_GetTicks();
-			new_ball_x = 160;
-			new_ball_y = SCREEN_HEIGHT - 10;
-			new_ball_speed.x = 10;
-			new_ball_speed.y = -25;
-			sensor_holding = true;
-		}
-		else
+	if (SDL_GetTicks() - last_time_hold * 1000 > time_between_holds * 1000) {
+		if (bodyA == drain_sensor)
 		{
-			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
-			{
-				change_ball_position = true;
-				center_body = nullptr;
-				sensor_holding = false;
+			if (sensor_holding == false) {
+				sensor_contact_moment = SDL_GetTicks();
+				new_ball_x = 160;
+				new_ball_y = SCREEN_HEIGHT - 10;
+				new_ball_speed.x = 10;
+				new_ball_speed.y = -25;
+				sensor_holding = true;
 			}
 			else
 			{
-				center_body = drain_sensor;
+				if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+				{
+					change_ball_position = true;
+					center_body = nullptr;
+					sensor_holding = false;
+					last_time_hold = SDL_GetTicks();
+				}
+				else
+				{
+					center_body = drain_sensor;
+				}
+			}
+		}
+
+		if (bodyA == stove_1_sensor)
+		{
+			if (sensor_holding == false)
+			{
+				sensor_contact_moment = SDL_GetTicks();
+				sensor_holding = true;
+			}
+			else
+			{
+				if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+				{
+					ball->body->SetLinearVelocity(b2Vec2(-8, 12));
+					center_body = nullptr;
+					sensor_holding = false;
+					last_time_hold = SDL_GetTicks();
+				}
+				else
+				{
+					center_body = stove_1_sensor;
+				}
+			}
+		}
+
+		if (bodyA == stove_2_sensor)
+		{
+			if (sensor_holding == false)
+			{
+				sensor_contact_moment = SDL_GetTicks();
+				sensor_holding = true;
+			}
+			else
+			{
+				if (SDL_GetTicks() - sensor_contact_moment > stove_2_time * 1000)
+				{
+					ball->body->SetLinearVelocity(b2Vec2(-14, -14));
+					center_body = nullptr;
+					sensor_holding = false;
+					last_time_hold = SDL_GetTicks();
+				}
+				else
+				{
+					center_body = stove_2_sensor;
+				}
 			}
 		}
 	}
-
-	if (bodyA == stove_1_sensor)
+	else {center_body = nullptr;}
+	if (bodyA == left_triangle_sensor)
 	{
-		if (sensor_holding == false)
-		{
-			sensor_contact_moment = SDL_GetTicks();
-			sensor_holding = true;
-		}
-		else
-		{
-			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
-			{
-				ball->body->SetLinearVelocity(b2Vec2(-8, 12));
-				center_body = nullptr;
-				sensor_holding = false;
-			}
-			else
-			{
-				center_body = stove_1_sensor;
-			}
-		}
+		ball->body->SetLinearVelocity(b2Vec2(6, -6));
 	}
 
-	if (bodyA == stove_2_sensor)
-	{
-		if (sensor_holding == false)
-		{
-			sensor_contact_moment = SDL_GetTicks();
-			sensor_holding = true;
-		}
-		else
-		{
-			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
-			{
-				ball->body->SetLinearVelocity(b2Vec2(-22, -20));
-				center_body = nullptr;
-				sensor_holding = false;
-			}
-			else
-			{
-				center_body = stove_2_sensor;
-			}
-		}
+	if (bodyA == right_triangle_sensor) {
+		ball->body->SetLinearVelocity(b2Vec2(-6, -6));
 	}
 }
 
