@@ -68,6 +68,7 @@ bool ModuleScene::CleanUp()
 
 update_status ModuleScene::Update()
 {
+<<<<<<< HEAD
 
 	if (move_to_origin) { 
 		ResetBall();
@@ -78,107 +79,125 @@ update_status ModuleScene::Update()
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+=======
+	if (lives > 0) 
+>>>>>>> c1ca6b7a7d5d6a3638664fbe30cce5ad0b18891c
 	{
-		ray_on = !ray_on;
-		ray.x = App->input->GetMouseX();
-		ray.y = App->input->GetMouseY();
-	}
+		if (move_to_origin) {
+			ResetBall();
+			move_to_origin = false;
+		}
+		if (center_body != nullptr) {
+			int center_body_x;
+			int center_body_y;
+			//center_body->body->GetWorldCenter();
+			ball->body->SetTransform(center_body->body->GetWorldCenter(), 0);
+		}
 
-	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
-		//circles.getLast()->data->listener = this;
-		ResetBall();
-	}
+		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+		{
+			ray_on = !ray_on;
+			ray.x = App->input->GetMouseX();
+			ray.y = App->input->GetMouseY();
+		}
 
-	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-	}
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
+			//circles.getLast()->data->listener = this;
+			ResetBall();
+		}
 
-	if(App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		// Pivot 0, 0
-		int rick_head[64] = {
-			14, 36,
-			42, 40,
-			40, 0,
-			75, 30,
-			88, 4,
-			94, 39,
-			111, 36,
-			104, 58,
-			107, 62,
-			117, 67,
-			109, 73,
-			110, 85,
-			106, 91,
-			109, 99,
-			103, 104,
-			100, 115,
-			106, 121,
-			103, 125,
-			98, 126,
-			95, 137,
-			83, 147,
-			67, 147,
-			53, 140,
-			46, 132,
-			34, 136,
-			38, 126,
-			23, 123,
-			30, 114,
-			10, 102,
-			29, 90,
-			0, 75,
-			30, 62
-		};
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		{
+			boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
+		}
 
-		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
+		if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+		{
+			// Pivot 0, 0
+			int rick_head[64] = {
+				14, 36,
+				42, 40,
+				40, 0,
+				75, 30,
+				88, 4,
+				94, 39,
+				111, 36,
+				104, 58,
+				107, 62,
+				117, 67,
+				109, 73,
+				110, 85,
+				106, 91,
+				109, 99,
+				103, 104,
+				100, 115,
+				106, 121,
+				103, 125,
+				98, 126,
+				95, 137,
+				83, 147,
+				67, 147,
+				53, 140,
+				46, 132,
+				34, 136,
+				38, 126,
+				23, 123,
+				30, 114,
+				10, 102,
+				29, 90,
+				0, 75,
+				30, 62
+			};
+
+			ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
+		}
+
+		if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
+
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
+			b2Vec2 impulse = b2Vec2(0, -200);
+			left_flipper->body->ApplyForceToCenter(impulse, 1);
+			left_flipper_joint.lowerAngle = 45 * DEGTORAD;
+			if (playing_left_flipper_fx == false)
+			{
+				App->audio->PlayFx(flipper_fx);
+				playing_left_flipper_fx = true;
+			}
+		}
+
+		if (!(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)) playing_right_flipper_fx = false;
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
+			b2Vec2 impulse = b2Vec2(0, -200);
+			right_flipper->body->ApplyForceToCenter(impulse, 1);
+			right_flipper_joint.lowerAngle = 45 * DEGTORAD;
+			if (playing_right_flipper_fx == false)
+			{
+				App->audio->PlayFx(flipper_fx);
+				playing_right_flipper_fx = true;
+			}
+		}
+
+		static int pow = 0;
+		static int impulse = 100;
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
+
+			pow += 2;
+
+			kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
+
+			if (pow > 100)
+				pow = 100;
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
+			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
+			pow = 0;
+		}
 	}
 	
-	if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
-
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
-		b2Vec2 impulse = b2Vec2(0, -200);
-		left_flipper->body->ApplyForceToCenter(impulse, 1);
-		left_flipper_joint.lowerAngle = 45 * DEGTORAD;
-		if (playing_left_flipper_fx == false)
-		{
-			App->audio->PlayFx(flipper_fx);
-			playing_left_flipper_fx = true;
-		}
-	}
-
-	if (!(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)) playing_right_flipper_fx = false;
-
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
-		b2Vec2 impulse = b2Vec2(0, -200);
-		right_flipper->body->ApplyForceToCenter(impulse, 1);
-		right_flipper_joint.lowerAngle = 45 * DEGTORAD;
-		if (playing_right_flipper_fx == false)
-		{
-			App->audio->PlayFx(flipper_fx);
-			playing_right_flipper_fx = true;
-		}
-	}
-
-	static int pow = 0;
-	static int impulse = 100;
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
-
-		pow += 2;
-
-		kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
-
-		if (pow > 100)
-			pow = 100;
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
-		kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
-		pow = 0;
-	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
 
