@@ -81,7 +81,8 @@ public:
 	SDL_Texture* flipper_tex;
 	SDL_Texture* spritesheet;
 	SDL_Texture* letters;
-
+	SDL_Texture* letters_2;
+	
 	//fx
 	bool playing_left_flipper_fx;
 	bool playing_right_flipper_fx;
