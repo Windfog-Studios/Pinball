@@ -34,6 +34,7 @@ bool ModuleScene::Start()
 	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
+	
 
 	//sounds and music
 
@@ -255,6 +256,10 @@ update_status ModuleScene::Update()
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
 	App->renderer->Blit(letters, 370, 350, &letters_rect);
+
+	//play letters
+	SDL_Rect play_rect = { 0, 386, 60, 18 };
+	App->renderer->Blit(spritesheet, 450, 546, &play_rect);
 
 	// ray -----------------
 	if(ray_on == true)
