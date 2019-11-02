@@ -622,6 +622,9 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (sensed == false)
 		{
 			change_ball_position = true;
+			new_ball_x = START_BALL_POSITION_X;
+			new_ball_y = START_BALL_POSITION_Y;
+			new_ball_speed = b2Vec2_zero;
 			App->audio->PlayFx(ball_lost_fx);
 			lives--;
 			sensed = true;
