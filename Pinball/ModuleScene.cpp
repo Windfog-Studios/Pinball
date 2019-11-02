@@ -723,17 +723,20 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			if (sensor_holding == false)
 			{
 				sensor_contact_moment = SDL_GetTicks();
-				center_body = stove_2_sensor;
 				sensor_holding = true;
 			}
 			else
 			{
-				if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+				if (SDL_GetTicks() - sensor_contact_moment > stove_2_time * 1000)
 				{
-					ball->body->SetLinearVelocity(b2Vec2(-18, -18));
+					ball->body->SetLinearVelocity(b2Vec2(-14, -14));
 					center_body = nullptr;
 					sensor_holding = false;
 					last_time_hold = SDL_GetTicks();
+				}
+				else
+				{
+					center_body = stove_2_sensor;
 				}
 			}
 		}
