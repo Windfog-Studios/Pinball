@@ -34,7 +34,8 @@ bool ModuleScene::Start()
 
 	//sounds
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
-
+	pan_fx = App->audio->LoadFx("assets/sound/pan.wav");
+	triangle_fx = App->audio->LoadFx("assets/sound/triangle.wav");
 	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
 	InitializeSceneColliders();
@@ -74,8 +75,9 @@ update_status ModuleScene::Update()
 		//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
 		//circles.getLast()->data->listener = this;
 		b2Vec2 position;
-		position.x = PIXEL_TO_METERS(START_BALL_POSITION_X/2);
-		position.y = PIXEL_TO_METERS(30);
+		position.x = PIXEL_TO_METERS(START_BALL_POSITION_X/4);
+		position.y = PIXEL_TO_METERS(350);
+		ball->body->SetAngularVelocity(0);
 		ball->body->SetTransform(position, 0);
 	}
 
@@ -260,35 +262,39 @@ update_status ModuleScene::Update()
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
-
-	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
-	{
-		App->audio->PlayFx(bonus_fx);
-		points += 30;
-	}
-
+	//cases in which bodyA == ball
+	LOG("");
 	if (bodyA == ball)
 	{
 		if ((bodyB == pan1) || (bodyB == pan2) || (bodyB == pan3))
 		{
 			points += 30;
-			App->audio->PlayFx(bonus_fx);
+			App->audio->PlayFx(pan_fx);
+		}
+
+		if ((bodyB == left_triangle) || (bodyB == right_triangle))
+		{
+			points += 30;
+			App->audio->PlayFx(triangle_fx);
 		}
 	}
-	if(bodyA)
+
+	//inverse cases
+	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
 	{
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
+		App->audio->PlayFx(pan_fx);
+		points += 30;
 	}
 
-	if (bodyB)
+	if ((bodyA == left_triangle)||(bodyA == right_triangle))
 	{
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
+		App->audio->PlayFx(triangle_fx);
+		points += 30;
 	}
 }
 
 void ModuleScene::InitializeSceneColliders() {
+
 	//collider points
 	int board_points[58] = {
 		1, 597,
@@ -447,15 +453,26 @@ void ModuleScene::InitializeSceneColliders() {
 
 	//collider creation
 	App->physics->CreateStaticChain(0, 0, board_points, 58);
-	App->physics->CreateStaticChain(0, 0, triangle_1_points, 10);
-	App->physics->CreateStaticChain(0, 0, triangle_2_points, 10);
-	App->physics->CreateStaticChain(0, 0, right_bar_points, 30);
-	App->physics->CreateStaticChain(0, 0, left_wood_points, 56);
-	App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
-	App->physics->CreateStaticChain(0, 0, left_l_points, 12);
-	App->physics->CreateStaticChain(0, 0, right_l_points, 12);
-	App->physics->CreateStaticChain(0, 0, left_capsule_points, 16);
-	App->physics->CreateStaticChain(0, 0, right_capsule_points, 16);
+	left_triangle = App->physics->CreateStaticChain(0, 0, triangle_1_points, 10);
+	right_triangle = App->physics->CreateStaticChain(0, 0, triangle_2_points, 10);
+	right_bar = App->physics->CreateStaticChain(0, 0, right_bar_points, 30);
+	left_wood = App->physics->CreateStaticChain(0, 0, left_wood_points, 56);
+	right_wood = App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
+    left_L = App->physics->CreateStaticChain(0, 0, left_l_points, 12);
+	right_L = App->physics->CreateStaticChain(0, 0, right_l_points, 12);
+	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16);
+	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16);
+
+	//collider listeners
+	left_triangle->listener = this;
+	right_triangle->listener = this;
+	right_bar->listener = this;
+	left_wood->listener = this;
+	right_wood->listener = this;
+	left_L->listener = this;
+	right_L->listener = this;
+	left_capsule->listener = this;
+	right_capsule->listener = this;
 }
 
 void ModuleScene::initializeInteractiveElements() {

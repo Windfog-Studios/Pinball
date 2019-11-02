@@ -44,10 +44,19 @@ public:
 	PhysBody* right_flipper_anchor;
 	PhysBody* right_flipper;
 
-	//pans
+	//interactive statics
 	PhysBody* pan1;
 	PhysBody* pan2;
 	PhysBody* pan3;
+	PhysBody* left_triangle;
+	PhysBody* right_triangle;
+	PhysBody* left_L;
+	PhysBody* right_L;
+	PhysBody* left_capsule;
+	PhysBody* right_capsule;
+	PhysBody* right_bar;
+	PhysBody* left_wood;
+	PhysBody* right_wood;
 
 	//b2RevoluteJoint* left_flipper_joint = nullptr;
 	b2RevoluteJointDef left_flipper_joint;
@@ -71,6 +80,9 @@ public:
 
 	//fx
 	uint bonus_fx;
+	uint pan_fx;
+	uint triangle_fx;
+
 	p2Point<int> ray;
 	bool ray_on;
 };
