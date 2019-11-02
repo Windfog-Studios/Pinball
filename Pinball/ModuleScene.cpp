@@ -70,117 +70,114 @@ bool ModuleScene::CleanUp()
 // Update: draw background
 update_status ModuleScene::Update()
 {
-	if (lives > 0) 
+
+	if (move_to_origin) { 
+		ResetBall();
+		move_to_origin = false;
+	}
+
+	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		if (move_to_origin) {
-			ResetBall();
-			move_to_origin = false;
-		}
+		ray_on = !ray_on;
+		ray.x = App->input->GetMouseX();
+		ray.y = App->input->GetMouseY();
+	}
 
-		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-		{
-			ray_on = !ray_on;
-			ray.x = App->input->GetMouseX();
-			ray.y = App->input->GetMouseY();
-		}
+	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	{
+		//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
+		//circles.getLast()->data->listener = this;
+		ResetBall();
+	}
 
-		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-		{
-			//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
-			//circles.getLast()->data->listener = this;
-			ResetBall();
-		}
+	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	{
+		boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
+	}
 
-		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-		{
-			boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-		}
+	if(App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+	{
+		// Pivot 0, 0
+		int rick_head[64] = {
+			14, 36,
+			42, 40,
+			40, 0,
+			75, 30,
+			88, 4,
+			94, 39,
+			111, 36,
+			104, 58,
+			107, 62,
+			117, 67,
+			109, 73,
+			110, 85,
+			106, 91,
+			109, 99,
+			103, 104,
+			100, 115,
+			106, 121,
+			103, 125,
+			98, 126,
+			95, 137,
+			83, 147,
+			67, 147,
+			53, 140,
+			46, 132,
+			34, 136,
+			38, 126,
+			23, 123,
+			30, 114,
+			10, 102,
+			29, 90,
+			0, 75,
+			30, 62
+		};
 
-		if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-		{
-			// Pivot 0, 0
-			int rick_head[64] = {
-				14, 36,
-				42, 40,
-				40, 0,
-				75, 30,
-				88, 4,
-				94, 39,
-				111, 36,
-				104, 58,
-				107, 62,
-				117, 67,
-				109, 73,
-				110, 85,
-				106, 91,
-				109, 99,
-				103, 104,
-				100, 115,
-				106, 121,
-				103, 125,
-				98, 126,
-				95, 137,
-				83, 147,
-				67, 147,
-				53, 140,
-				46, 132,
-				34, 136,
-				38, 126,
-				23, 123,
-				30, 114,
-				10, 102,
-				29, 90,
-				0, 75,
-				30, 62
-			};
-
-			ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
-		}
-
-		if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
-
-		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
-			b2Vec2 impulse = b2Vec2(0, -200);
-			left_flipper->body->ApplyForceToCenter(impulse, 1);
-			left_flipper_joint.lowerAngle = 45 * DEGTORAD;
-			if (playing_left_flipper_fx == false)
-			{
-				App->audio->PlayFx(flipper_fx);
-				playing_left_flipper_fx = true;
-			}
-		}
-
-		if (!(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)) playing_right_flipper_fx = false;
-
-		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
-			b2Vec2 impulse = b2Vec2(0, -200);
-			right_flipper->body->ApplyForceToCenter(impulse, 1);
-			right_flipper_joint.lowerAngle = 45 * DEGTORAD;
-			if (playing_right_flipper_fx == false)
-			{
-				App->audio->PlayFx(flipper_fx);
-				playing_right_flipper_fx = true;
-			}
-		}
-
-		static int pow = 0;
-		static int impulse = 100;
-		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
-
-			pow += 2;
-
-			kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
-
-			if (pow > 100)
-				pow = 100;
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
-			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
-			pow = 0;
-		}
+		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
 	}
 	
+	if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
+		b2Vec2 impulse = b2Vec2(0, -200);
+		left_flipper->body->ApplyForceToCenter(impulse, 1);
+		left_flipper_joint.lowerAngle = 45 * DEGTORAD;
+		if (playing_left_flipper_fx == false)
+		{
+			App->audio->PlayFx(flipper_fx);
+			playing_left_flipper_fx = true;
+		}
+	}
+
+	if (!(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)) playing_right_flipper_fx = false;
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
+		b2Vec2 impulse = b2Vec2(0, -200);
+		right_flipper->body->ApplyForceToCenter(impulse, 1);
+		right_flipper_joint.lowerAngle = 45 * DEGTORAD;
+		if (playing_right_flipper_fx == false)
+		{
+			App->audio->PlayFx(flipper_fx);
+			playing_right_flipper_fx = true;
+		}
+	}
+
+	static int pow = 0;
+	static int impulse = 100;
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
+
+		pow += 2;
+
+		kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
+
+		if (pow > 100)
+			pow = 100;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
+		kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
+		pow = 0;
+	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
 
@@ -263,17 +260,23 @@ update_status ModuleScene::Update()
 
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
-	
+	App->renderer->Blit(letters, 370, 350, &letters_rect);
+
 	//blit letters 2
+	/*
 	SDL_Rect letters_rect2 = { 2, 19, 208, 181 };
-	
+	App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
+	*/
+
 	//play letters
 	SDL_Rect play_rect = { 0, 386, 60, 18 };
-	
-	//restart letters
-	SDL_Rect restart_rect = { 0, 424, 107, 18 };
+	App->renderer->Blit(spritesheet, 450, 546, &play_rect);
 
-	
+	//replay letters
+	/*
+	SDL_Rect replay_rect = { 0, 424, 92, 18 };
+	App->renderer->Blit(spritesheet, 430, 546, &replay_rect);
+	*/
 
 	// ray -----------------
 	if(ray_on == true)
@@ -288,32 +291,9 @@ update_status ModuleScene::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
-	if (lives > 2) 
-	{
-		App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
-		App->renderer->Blit(letters, 370, 350, &letters_rect);
-	}
-	if (lives > 1 && lives < 3) 
-	{
-		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
-		App->renderer->Blit(letters, 370, 350, &letters_rect);
-	}
-	if (lives > 0 && lives < 2) 
-	{
-		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
-		App->renderer->Blit(letters, 370, 350, &letters_rect);
-	}
-	if (lives < 1)
-	{
-		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
-		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
-	}
+	if (lives > 2) App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
+	if (lives > 1) App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
+	if (lives > 0) App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
 
 	return UPDATE_CONTINUE;
 }
