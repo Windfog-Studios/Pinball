@@ -331,6 +331,8 @@ update_status ModulePhysics::PostUpdate()
 			mouse.x = PIXEL_TO_METERS(App->input->GetMouseX());
 			mouse.y = PIXEL_TO_METERS(App->input->GetMouseY());
 			b2Vec2 position = mouse_joint->GetBodyB()->GetPosition();
+			mouse_joint->SetTarget(mouse);
+			b2Vec2 anchorB = mouse_joint->GetTarget();
 			App->renderer->DrawLine(mouse.x, mouse.y, PIXEL_TO_METERS(position.x), PIXEL_TO_METERS(position.y), 255, 100, 100);
 			LOG("Line");
 			LOG("mouse x: %f", mouse.x);
@@ -338,6 +340,11 @@ update_status ModulePhysics::PostUpdate()
 			LOG("position: x: %f", position.x);
 			LOG("position: y: %f", position.y);
 		}
+	}
+
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP && mouse_joint != nullptr) {
+		world->DestroyJoint(mouse_joint);
+		mouse_joint = nullptr;
 	}
 
 	// TODO 3: If the player keeps pressing the mouse button, update

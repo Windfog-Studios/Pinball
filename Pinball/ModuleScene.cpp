@@ -184,6 +184,20 @@ update_status ModuleScene::Update()
 			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
 			pow = 0;
 		}
+
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+		{
+			if (restart_sensor->Contains(App->input->GetMouseX(), App->input->GetMouseY())){
+				lives = 3;
+				change_ball_position = true;
+				new_ball_x = START_BALL_POSITION_X;
+				new_ball_y = START_BALL_POSITION_Y;
+				new_ball_speed = b2Vec2_zero;
+			}
+			
+		}
+			
+		
 	}
 	
 
@@ -287,7 +301,7 @@ update_status ModuleScene::Update()
 	
 	/*
 	sprintf_s(point_text, 10, "%7d", player_point);
-	App->fonts->BlitText(77, 8, Point_numbers, point_text);
+	App->fonts->BlitText(147, 51, Point_numbers, point_text);
 	*/
 	
 
