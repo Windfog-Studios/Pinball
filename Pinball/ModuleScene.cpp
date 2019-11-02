@@ -173,9 +173,7 @@ update_status ModuleScene::Update()
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
 
 			pow += 2;
-
-			kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
-
+			
 			if (pow > 100)
 				pow = 100;
 		}
@@ -185,19 +183,17 @@ update_status ModuleScene::Update()
 			pow = 0;
 		}
 
-		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
-		{
-			if (restart_sensor->Contains(App->input->GetMouseX(), App->input->GetMouseY())){
-				lives = 3;
-				change_ball_position = true;
-				new_ball_x = START_BALL_POSITION_X;
-				new_ball_y = START_BALL_POSITION_Y;
-				new_ball_speed = b2Vec2_zero;
-			}
-			
+	}
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+	{
+		if (restart_sensor->Contains(App->input->GetMouseX(), App->input->GetMouseY())) {
+			lives = 3;
+			change_ball_position = true;
+			new_ball_x = START_BALL_POSITION_X;
+			new_ball_y = START_BALL_POSITION_Y;
+			new_ball_speed = b2Vec2_zero;
 		}
-			
-		
+
 	}
 	
 
@@ -593,7 +589,7 @@ void ModuleScene::initializeInteractiveElements() {
 	pan3->listener = this;
 
 	//kicker
-	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 15, 5);
+	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 20, 5);
 	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 15, 5);
 
 	static_kicker->body->SetType(b2_staticBody);
@@ -603,11 +599,11 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.collideConnected = false;
 	kicker_joint.enableLimit = true;
 
-	kicker_joint.lowerTranslation = PIXEL_TO_METERS(10);
-	kicker_joint.upperTranslation = PIXEL_TO_METERS(12);
+	kicker_joint.lowerTranslation = PIXEL_TO_METERS(0);
+	kicker_joint.upperTranslation = PIXEL_TO_METERS(40);
 
 	kicker_joint.localAnchorA.Set(0, 0);
-	kicker_joint.localAnchorB.Set(0, -0.5);
+	kicker_joint.localAnchorB.Set(0, 0);
 
 	kicker_joint.localAxisA.Set(0, 1);
 
