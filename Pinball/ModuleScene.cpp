@@ -263,10 +263,9 @@ update_status ModuleScene::Update()
 	App->renderer->Blit(letters, 370, 350, &letters_rect);
 
 	//blit letters 2
-	/*
 	SDL_Rect letters_rect2 = { 2, 19, 208, 181 };
-	App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
-	*/
+	
+	
 
 	//play letters
 	SDL_Rect play_rect = { 0, 386, 60, 18 };
@@ -310,6 +309,7 @@ update_status ModuleScene::Update()
 	if (lives < 1)
 	{
 		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
+		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
 	}
 
 	return UPDATE_CONTINUE;
