@@ -43,8 +43,8 @@ bool ModuleScene::Start()
 	ball_lost_fx = App->audio->LoadFx("assets/sound/ball_lost.wav");
 	flipper_fx = App->audio->LoadFx("assets/sound/flipper.wav");
 	//sensors
-	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH/2, 25);
-	bottom_sensor->listener = this;
+	//bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH/2, 1);
+	//bottom_sensor->listener = this;
 
 	InitializeSceneColliders();
 
@@ -81,12 +81,7 @@ update_status ModuleScene::Update()
 	{
 		//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
 		//circles.getLast()->data->listener = this;
-		b2Vec2 position;
-		position.x = PIXEL_TO_METERS(START_BALL_POSITION_X);
-		position.y = PIXEL_TO_METERS(START_BALL_POSITION_Y);
-		ball->body->SetTransform(position, 0);
-		ball->body->SetLinearVelocity(b2Vec2_zero);
-		ball->body->SetAngularVelocity(0);
+		ResetBall();
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
@@ -568,8 +563,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA == bottom_sensor)
 	{
-		//ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(START_BALL_POSITION_X), PIXEL_TO_METERS(START_BALL_POSITION_Y)),0);
-		//ball->body->SetLinearVelocity(b2Vec2_zero);
+		ResetBall();
 		App->audio->PlayFx(ball_lost_fx);
 	}
 
@@ -596,4 +590,9 @@ if (bodyA == ball)
 
 }
 */
+}
+
+void ModuleScene::ResetBall() {
+	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(START_BALL_POSITION_X), PIXEL_TO_METERS(START_BALL_POSITION_Y)),0);
+	ball->body->SetLinearVelocity(b2Vec2_zero);
 }

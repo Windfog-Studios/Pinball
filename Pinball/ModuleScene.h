@@ -25,6 +25,7 @@ public:
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void InitializeSceneColliders();
 	void initializeInteractiveElements();
+	void ResetBall();
 
 public:
 
