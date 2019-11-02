@@ -631,7 +631,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	//cases in which bodyA == ball
 	LOG("");
 
-	if ((bodyA == left_flipper)|(bodyA == right_flipper))
+	if ((bodyA == left_flipper) | (bodyA == right_flipper))
 	{
 		ball->body->SetLinearVelocity(b2Vec2(6, 6));
 	}
@@ -741,6 +741,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			}
 		}
 	}
+	else {center_body = nullptr;}
 	if (bodyA == left_triangle_sensor)
 	{
 		ball->body->SetLinearVelocity(b2Vec2(6, -6));
