@@ -13,10 +13,10 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-	//initial_position.x = START_BALL_POSITION_X;
-	//initial_position.y = START_BALL_POSITION_Y;
-	initial_position.x = 95;
-	initial_position.y = 180;
+	initial_position.x = START_BALL_POSITION_X;
+	initial_position.y = START_BALL_POSITION_Y;
+	//initial_position.x = 95;
+	//initial_position.y = 180;
 }
 
 ModuleScene::~ModuleScene()
@@ -643,7 +643,8 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			new_ball_x = 160;
 			new_ball_y = SCREEN_HEIGHT - 10;
 			new_ball_speed.x = 10;
-			new_ball_speed.y = -20;
+			new_ball_speed.y = -25;
+			sensor_holding = true;
 		}
 		else
 		{
