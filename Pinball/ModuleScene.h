@@ -26,13 +26,16 @@ public:
 	void NotOnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void InitializeSceneColliders();
 	void initializeInteractiveElements();
-	void ResetBall();
+	void TranslateBall(int x, int y, b2Vec2 speed);
 
 public:
 
 	int points = 0;
 	int lives = 3;
 	b2Vec2 initial_position;
+	int new_ball_x;
+	int new_ball_y;
+	b2Vec2 new_ball_speed;
 
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> boxes;
@@ -101,8 +104,8 @@ public:
 
 	int stove_1_time = 2;
 	int stove_2_time = 2;
-	bool stove_holding = false;
-	int stove_contact_moment = 0;
+	bool sensor_holding = false;
+	int sensor_contact_moment = 0;
 
 
 	PhysBody* center_body = nullptr;

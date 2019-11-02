@@ -12,10 +12,10 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-	initial_position.x = START_BALL_POSITION_X;
-	initial_position.y = START_BALL_POSITION_Y;
-	//initial_position.x = 205;
-	//initial_position.y = 250;
+	//initial_position.x = START_BALL_POSITION_X;
+	//initial_position.y = START_BALL_POSITION_Y;
+	initial_position.x = 95;
+	initial_position.y = 180;
 }
 
 ModuleScene::~ModuleScene()
@@ -72,13 +72,10 @@ update_status ModuleScene::Update()
 	if (lives > 0) 
 	{
 		if (change_ball_position) {
-			ResetBall();
-			move_to_origin = false;
+			TranslateBall(new_ball_x, new_ball_y, new_ball_speed);
+			change_ball_position = false;
 		}
 		if (center_body != nullptr) {
-			int center_body_x;
-			int center_body_y;
-			//center_body->body->GetWorldCenter();
 			ball->body->SetTransform(center_body->body->GetWorldCenter(), 0);
 		}
 
@@ -93,7 +90,7 @@ update_status ModuleScene::Update()
 		{
 			//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
 			//circles.getLast()->data->listener = this;
-			ResetBall();
+			TranslateBall(initial_position.x, initial_position.y, b2Vec2_zero);
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
@@ -622,7 +619,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		if (sensed == false)
 		{
-			move_to_origin = true;
+			change_ball_position = true;
 			App->audio->PlayFx(ball_lost_fx);
 			lives--;
 			sensed = true;
@@ -634,20 +631,44 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		//App->audio->PlayFx();
 	}
 
-	if (bodyA == stove_1_sensor)
+	if (bodyA == drain_sensor)
 	{
-		if (stove_holding == false)
-		{
-			stove_contact_moment = SDL_GetTicks();
-			stove_holding = true;
+		if (sensor_holding == false) {
+			sensor_contact_moment = SDL_GetTicks();
+			new_ball_x = 160;
+			new_ball_y = SCREEN_HEIGHT - 10;
+			new_ball_speed.x = 10;
+			new_ball_speed.y = -20;
 		}
 		else
 		{
-			if (SDL_GetTicks() - stove_contact_moment > stove_1_time * 1000)
+			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+			{
+				change_ball_position = true;
+				center_body = nullptr;
+				sensor_holding = false;
+			}
+			else
+			{
+				center_body = drain_sensor;
+			}
+		}
+	}
+
+	if (bodyA == stove_1_sensor)
+	{
+		if (sensor_holding == false)
+		{
+			sensor_contact_moment = SDL_GetTicks();
+			sensor_holding = true;
+		}
+		else
+		{
+			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
 			{
 				ball->body->SetLinearVelocity(b2Vec2(-8, 12));
 				center_body = nullptr;
-				stove_holding = false;
+				sensor_holding = false;
 			}
 			else
 			{
@@ -658,18 +679,18 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA == stove_2_sensor)
 	{
-		if (stove_holding == false)
+		if (sensor_holding == false)
 		{
-			stove_contact_moment = SDL_GetTicks();
-			stove_holding = true;
+			sensor_contact_moment = SDL_GetTicks();
+			sensor_holding = true;
 		}
 		else
 		{
-			if (SDL_GetTicks() - stove_contact_moment > stove_1_time * 1000)
+			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
 			{
 				ball->body->SetLinearVelocity(b2Vec2(-22, -20));
 				center_body = nullptr;
-				stove_holding = false;
+				sensor_holding = false;
 			}
 			else
 			{
@@ -686,8 +707,8 @@ void ModuleScene::NotOnCollision(PhysBody* bodyA, PhysBody* bodyB) {
 	}
 }
 
-void ModuleScene::ResetBall() {
-	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(START_BALL_POSITION_X),PIXEL_TO_METERS(START_BALL_POSITION_Y)),0);
-	ball->body->SetLinearVelocity(b2Vec2_zero);
+void ModuleScene::TranslateBall(int x, int y, b2Vec2 speed) {
+	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(x),PIXEL_TO_METERS(y)),0);
+	ball->body->SetLinearVelocity(speed);
 	ball->body->SetAngularVelocity(0);
 }
