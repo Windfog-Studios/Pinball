@@ -14,5 +14,4 @@ public:
 	bool CleanUp();
 
 public:
-
 };

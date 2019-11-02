@@ -45,9 +45,10 @@ bool ModuleScene::Start()
 	triangle_fx = App->audio->LoadFx("assets/sound/triangle.wav");
 	ball_lost_fx = App->audio->LoadFx("assets/sound/ball_lost.wav");
 	flipper_fx = App->audio->LoadFx("assets/sound/flipper.wav");
+
 	//sensors
-	//bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH/2, 1);
-	//bottom_sensor->listener = this;
+	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH/2, 1);
+	bottom_sensor->listener = this;
 
 	InitializeSceneColliders();
 
@@ -73,6 +74,12 @@ bool ModuleScene::CleanUp()
 // Update: draw background
 update_status ModuleScene::Update()
 {
+
+	if (move_to_origin) { 
+		ResetBall();
+		move_to_origin = false;
+	}
+
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		ray_on = !ray_on;
@@ -286,6 +293,10 @@ update_status ModuleScene::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
+
+	if (lives > 2) App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
+	if (lives > 1) App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
+	if (lives > 0) App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
 
 	return UPDATE_CONTINUE;
 }
@@ -586,36 +597,25 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA == bottom_sensor)
 	{
-		ResetBall();
-		App->audio->PlayFx(ball_lost_fx);
+		if (sensed == false)
+		{
+			move_to_origin = true;
+			App->audio->PlayFx(ball_lost_fx);
+			lives--;
+			sensed = true;
+		}
 	}
-
-	/*
-if (bodyA == ball)
-{
-	if ((bodyB == pan1) || (bodyB == pan2) || (bodyB == pan3))
-	{
-		points += 30;
-		App->audio->PlayFx(pan_fx);
-	}
-
-	if ((bodyB == left_triangle) || (bodyB == right_triangle))
-	{
-		points += 30;
-		App->audio->PlayFx(triangle_fx);
-	}
-
-	if (bodyB == bottom_sensor)
-	{
-		//ball->body->SetTransform(initial_position, 0);
-		//ball->body->SetLinearVelocity(b2Vec2_zero);
-	}
-
 }
-*/
+
+void ModuleScene::NotOnCollision(PhysBody* bodyA, PhysBody* bodyB) {
+	if (bodyA == bottom_sensor)
+	{
+		sensed = false;
+	}
 }
 
 void ModuleScene::ResetBall() {
 	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(START_BALL_POSITION_X), PIXEL_TO_METERS(START_BALL_POSITION_Y)),0);
 	ball->body->SetLinearVelocity(b2Vec2_zero);
+	ball->body->SetAngularVelocity(0);
 }

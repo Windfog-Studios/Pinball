@@ -23,6 +23,7 @@ public:
 	update_status Update();
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
+	void NotOnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	void InitializeSceneColliders();
 	void initializeInteractiveElements();
 	void ResetBall();
@@ -30,6 +31,7 @@ public:
 public:
 
 	int points = 0;
+	int lives = 3;
 	b2Vec2 initial_position;
 
 	p2List<PhysBody*> circles;
@@ -94,4 +96,6 @@ public:
 
 	p2Point<int> ray;
 	bool ray_on;
+	bool move_to_origin = false;
+	bool game_over = false;
 };
