@@ -12,10 +12,10 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-	//initial_position.x = PIXEL_TO_METERS(START_BALL_POSITION_X);
-	//initial_position.y = PIXEL_TO_METERS(START_BALL_POSITION_Y);
-	initial_position.x = 205;
-	initial_position.y = 250;
+	initial_position.x = START_BALL_POSITION_X;
+	initial_position.y = START_BALL_POSITION_Y;
+	//initial_position.x = 205;
+	//initial_position.y = 250;
 }
 
 ModuleScene::~ModuleScene()
@@ -68,20 +68,8 @@ bool ModuleScene::CleanUp()
 
 update_status ModuleScene::Update()
 {
-<<<<<<< HEAD
 
-	if (move_to_origin) { 
-		ResetBall();
-		move_to_origin = false;
-	}
-	if (center_body != nullptr) {
-		ball->body->SetTransform(center_body->body->GetWorldCenter(),0);
-	}
-
-	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-=======
 	if (lives > 0) 
->>>>>>> c1ca6b7a7d5d6a3638664fbe30cce5ad0b18891c
 	{
 		if (move_to_origin) {
 			ResetBall();
