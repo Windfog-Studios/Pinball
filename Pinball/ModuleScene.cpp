@@ -273,13 +273,11 @@ update_status ModuleScene::Update()
 
 	//play letters
 	SDL_Rect play_rect = { 0, 386, 60, 18 };
-	App->renderer->Blit(spritesheet, 450, 546, &play_rect);
+	
+	//restart letters
+	SDL_Rect restart_rect = { 0, 424, 107, 18 };
 
-	//replay letters
-	/*
-	SDL_Rect replay_rect = { 0, 424, 92, 18 };
-	App->renderer->Blit(spritesheet, 430, 546, &replay_rect);
-	*/
+	
 
 	// ray -----------------
 	if(ray_on == true)
@@ -294,9 +292,28 @@ update_status ModuleScene::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
-	if (lives > 2) App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
-	if (lives > 1) App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
-	if (lives > 0) App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+	if (lives > 2) 
+	{
+		App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
+	}
+	if (lives > 1 && lives < 3) 
+	{
+		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
+	}
+	if (lives > 0 && lives < 2) 
+	{
+		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
+	}
+	if (lives < 1)
+	{
+		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
+	}
 
 	return UPDATE_CONTINUE;
 }
