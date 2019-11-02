@@ -151,18 +151,30 @@ update_status ModuleScene::Update()
 		pow = 0;
 	}
 	
+	if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
+
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT) {
 		b2Vec2 impulse = b2Vec2(0, -200);
 		left_flipper->body->ApplyForceToCenter(impulse, 1);
 		left_flipper_joint.lowerAngle = 45 * DEGTORAD;
-		App->audio->PlayFx(flipper_fx);
+		if (playing_left_flipper_fx == false)
+		{
+			App->audio->PlayFx(flipper_fx);
+			playing_left_flipper_fx = true;
+		}
 	}
+
+	if (!(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)) playing_right_flipper_fx = false;
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT) {
 		b2Vec2 impulse = b2Vec2(0, -200);
 		right_flipper->body->ApplyForceToCenter(impulse, 1);
 		right_flipper_joint.lowerAngle = 45 * DEGTORAD;
-		App->audio->PlayFx(flipper_fx);
+		if (playing_right_flipper_fx == false)
+		{
+			App->audio->PlayFx(flipper_fx);
+			playing_right_flipper_fx = true;
+		}
 	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());

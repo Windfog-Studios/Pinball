@@ -81,6 +81,8 @@ public:
 	SDL_Texture* spritesheet;
 
 	//fx
+	bool playing_left_flipper_fx;
+	bool playing_right_flipper_fx;
 	uint bonus_fx;
 	uint pan_fx;
 	uint triangle_fx;
