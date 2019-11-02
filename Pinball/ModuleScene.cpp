@@ -19,7 +19,6 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 ModuleScene::~ModuleScene()
 {}
 
-// Load assets
 bool ModuleScene::Start()
 {
 	LOG("Loading Intro assets");
@@ -56,7 +55,6 @@ bool ModuleScene::Start()
 	return ret;
 }
 
-// Load assets
 bool ModuleScene::CleanUp()
 {
 	//App->physics->world->DestroyJoint(left_revolute_joint);
@@ -67,13 +65,18 @@ bool ModuleScene::CleanUp()
 	return true;
 }
 
-// Update: draw background
 update_status ModuleScene::Update()
 {
 
 	if (move_to_origin) { 
 		ResetBall();
 		move_to_origin = false;
+	}
+	if (center_body != nullptr) {
+		int center_body_x;
+		int center_body_y;
+		//center_body->body->GetWorldCenter();
+		ball->body->SetTransform(center_body->body->GetWorldCenter(),0);
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
@@ -257,6 +260,10 @@ update_status ModuleScene::Update()
 	SDL_Rect kicker_rect = { 71,50,17,51 }; 
 	kicker->GetPosition(x, y);
 	App->renderer->Blit(spritesheet, x, y, &kicker_rect);
+
+	//blit sign
+	SDL_Rect sign = { 0,139,70,53 };
+	App->renderer->Blit(spritesheet, 35, 210, &sign);
 
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
@@ -614,6 +621,53 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->audio->PlayFx(ball_lost_fx);
 			lives--;
 			sensed = true;
+		}
+	}
+
+	if (bodyA == left_capsule)
+	{
+		//App->audio->PlayFx();
+	}
+
+	if (bodyA == stove_1_sensor)
+	{
+		if (stove_holding == false)
+		{
+			stove_contact_moment = SDL_GetTicks();
+			stove_holding = true;
+		}
+		else
+		{
+			if (SDL_GetTicks() - stove_contact_moment > stove_1_time * 1000)
+			{
+				ball->body->SetLinearVelocity(b2Vec2(0, 20));
+				center_body = nullptr;
+			}
+			else
+			{
+				center_body = stove_1_sensor;
+			}
+		}
+	}
+
+	if (bodyA == stove_2_sensor)
+	{
+		if (stove_holding == false)
+		{
+			stove_contact_moment = SDL_GetTicks();
+			stove_holding = true;
+		}
+		else
+		{
+			if (SDL_GetTicks() - stove_contact_moment > stove_1_time * 1000)
+			{
+				ball->body->SetLinearVelocity(b2Vec2(0, 20));
+				center_body = nullptr;
+			}
+			else
+			{
+				center_body = stove_2_sensor;
+			}
 		}
 	}
 }

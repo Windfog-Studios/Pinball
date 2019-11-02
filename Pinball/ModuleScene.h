@@ -99,6 +99,14 @@ public:
 	uint ball_lost_fx;
 	uint flipper_fx;
 
+	int stove_1_time = 2;
+	int stove_2_time = 2;
+	bool stove_holding = false;
+	int stove_contact_moment = 0;
+
+
+	PhysBody* center_body = nullptr;
+
 	p2Point<int> ray;
 	bool ray_on;
 	bool move_to_origin = false;
