@@ -33,6 +33,7 @@ bool ModuleScene::Start()
 	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
 	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
+	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 
 	//sounds and music
 
@@ -251,10 +252,14 @@ update_status ModuleScene::Update()
 	ball->GetPosition(x, y);
 	App->renderer->Blit(spritesheet, x, y, &ball_rect);
 
-	//kicker
+	// blit kicker
 	SDL_Rect kicker_rect = { 71,50,17,51 }; 
 	kicker->GetPosition(x, y);
 	App->renderer->Blit(spritesheet, x, y, &kicker_rect);
+
+	//blit letters
+	SDL_Rect letters_rect = { 2, 19, 208, 181};
+	App->renderer->Blit(letters, 370, 350, &letters_rect);
 
 	// ray -----------------
 	if(ray_on == true)
