@@ -46,10 +46,6 @@ bool ModuleScene::Start()
 	ball_lost_fx = App->audio->LoadFx("assets/sound/ball_lost.wav");
 	flipper_fx = App->audio->LoadFx("assets/sound/flipper.wav");
 
-	//sensors
-	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH/2, 1);
-	bottom_sensor->listener = this;
-
 	InitializeSceneColliders();
 
 	initializeInteractiveElements();
@@ -139,22 +135,6 @@ update_status ModuleScene::Update()
 
 		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
 	}
-
-	static int pow = 0;
-	static int impulse = 100;
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
-
-		pow += 2;
-		
-		kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
-		
-		if (pow > 100)
-			pow =100;
-	}
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
-		kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
-		pow = 0;
-	}
 	
 	if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
 
@@ -180,6 +160,23 @@ update_status ModuleScene::Update()
 			App->audio->PlayFx(flipper_fx);
 			playing_right_flipper_fx = true;
 		}
+	}
+
+	static int pow = 0;
+	static int impulse = 100;
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
+
+		pow += 2;
+
+		kicker->body->ApplyForceToCenter(b2Vec2(0, impulse), 1);
+
+		if (pow > 100)
+			pow = 100;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
+		kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
+		pow = 0;
 	}
 
 	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
@@ -534,7 +531,6 @@ void ModuleScene::initializeInteractiveElements() {
 	right_flipper_joint.localAnchorB.Set(0, 0);
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
 
-
 	//pans
 	pan1 = App->physics->CreateCircle(180, 115, 16);
 	pan1->body->SetType(b2_staticBody);
@@ -545,7 +541,6 @@ void ModuleScene::initializeInteractiveElements() {
 	pan3 = App->physics->CreateCircle(195, 160, 16);
 	pan3->body->SetType(b2_staticBody);
 	pan3->listener = this;
-
 
 	//kicker
 	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 15, 5);
@@ -564,10 +559,18 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.localAnchorA.Set(0, 0);
 	kicker_joint.localAnchorB.Set(0, -0.5);
 
-
 	kicker_joint.localAxisA.Set(0, 1);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
+
+	//sensors
+
+	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH / 2, 1);
+	bottom_sensor->listener = this;
+	
+	drain_sensor = App->physics->CreateCircleSensor(96, 178, 10);
+	drain_sensor->listener = this;
+
 }
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)

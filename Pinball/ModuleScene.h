@@ -73,6 +73,8 @@ public:
 
 	//sensors
 	PhysBody* bottom_sensor;
+	PhysBody* restart_sensor;
+	PhysBody* drain_sensor;
 	bool sensed;
 
 	//sprites
