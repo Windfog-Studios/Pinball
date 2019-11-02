@@ -668,78 +668,83 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		//App->audio->PlayFx();
 	}
 
-	if (bodyA == drain_sensor)
-	{
-		if (sensor_holding == false) {
-			sensor_contact_moment = SDL_GetTicks();
-			new_ball_x = 160;
-			new_ball_y = SCREEN_HEIGHT - 10;
-			new_ball_speed.x = 10;
-			new_ball_speed.y = -25;
-			sensor_holding = true;
-		}
-		else
+	if (SDL_GetTicks() - last_time_hold * 1000 > time_between_holds * 1000) {
+		if (bodyA == drain_sensor)
 		{
-			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
-			{
-				change_ball_position = true;
-				center_body = nullptr;
-				sensor_holding = false;
+			if (sensor_holding == false) {
+				sensor_contact_moment = SDL_GetTicks();
+				new_ball_x = 160;
+				new_ball_y = SCREEN_HEIGHT - 10;
+				new_ball_speed.x = 10;
+				new_ball_speed.y = -25;
+				sensor_holding = true;
 			}
 			else
 			{
-				center_body = drain_sensor;
+				if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+				{
+					change_ball_position = true;
+					center_body = nullptr;
+					sensor_holding = false;
+					last_time_hold = SDL_GetTicks();
+				}
+				else
+				{
+					center_body = drain_sensor;
+				}
 			}
 		}
-	}
 
-	if (bodyA == stove_1_sensor)
-	{
-		if (sensor_holding == false)
+		if (bodyA == stove_1_sensor)
 		{
-			sensor_contact_moment = SDL_GetTicks();
-			sensor_holding = true;
-		}
-		else
-		{
-			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+			if (sensor_holding == false)
 			{
-				ball->body->SetLinearVelocity(b2Vec2(-8, 12));
-				center_body = nullptr;
-				sensor_holding = false;
+				sensor_contact_moment = SDL_GetTicks();
+				sensor_holding = true;
 			}
 			else
 			{
-				center_body = stove_1_sensor;
+				if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+				{
+					ball->body->SetLinearVelocity(b2Vec2(-8, 12));
+					center_body = nullptr;
+					sensor_holding = false;
+					last_time_hold = SDL_GetTicks();
+				}
+				else
+				{
+					center_body = stove_1_sensor;
+				}
 			}
 		}
-	}
 
-	if (bodyA == stove_2_sensor)
-	{
-		if (sensor_holding == false)
+		if (bodyA == stove_2_sensor)
 		{
-			sensor_contact_moment = SDL_GetTicks();
-			sensor_holding = true;
-		}
-		else
-		{
-			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+			if (sensor_holding == false)
 			{
-				ball->body->SetLinearVelocity(b2Vec2(-14, -14));
-				center_body = nullptr;
-				sensor_holding = false;
-			}
-			else
-			{
+				sensor_contact_moment = SDL_GetTicks();
 				center_body = stove_2_sensor;
+				sensor_holding = true;
+			}
+			else
+			{
+				if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
+				{
+					ball->body->SetLinearVelocity(b2Vec2(-18, -18));
+					center_body = nullptr;
+					sensor_holding = false;
+					last_time_hold = SDL_GetTicks();
+				}
 			}
 		}
 	}
-
 	if (bodyA == left_triangle_sensor)
 	{
 		ball->body->SetLinearVelocity(b2Vec2(6, -6));
+	}
+
+	if (bodyA == right_triangle_sensor) {
+		ball->body->SetLinearVelocity(b2Vec2(-6, -6));
 	}
 }
 

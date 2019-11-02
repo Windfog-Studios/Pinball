@@ -110,6 +110,9 @@ public:
 	int sensor_contact_moment = 0;
 	bool stove_holding = false;
 	int stove_contact_moment = 0;
+	int time_between_holds = 3;
+	int last_time_hold = 0;
+
 	int Point_numbers = 0;
 	char point_text[10];
 	int player_point = 0;
