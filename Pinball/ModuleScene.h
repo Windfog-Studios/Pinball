@@ -109,6 +109,6 @@ public:
 
 	p2Point<int> ray;
 	bool ray_on;
-	bool move_to_origin = false;
+	bool change_ball_position = false;
 	bool game_over = false;
 };

@@ -71,7 +71,7 @@ update_status ModuleScene::Update()
 
 	if (lives > 0) 
 	{
-		if (move_to_origin) {
+		if (change_ball_position) {
 			ResetBall();
 			move_to_origin = false;
 		}
