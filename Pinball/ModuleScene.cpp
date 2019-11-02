@@ -508,15 +508,15 @@ void ModuleScene::initializeInteractiveElements() {
 	};
 
 	//flippers
-	left_flipper = App->physics->CreateRectangle(107, 547, 45, 10);
+	left_flipper = App->physics->CreateRectangle(108, 548, 45, 10);
 	//left_flipper->body->SetType(b2_staticBody);
-	right_flipper = App->physics->CreateRectangle(180, 547, 45, 10);
+	right_flipper = App->physics->CreateRectangle(179, 548, 45, 10);
 	//right_flipper->body->SetType(b2_staticBody);
 
 	//flippers anchors
-	left_flipper_anchor = App->physics->CreateCircle(108, 557, 3);
+	left_flipper_anchor = App->physics->CreateCircle(110, 560, 3);
 	left_flipper_anchor->body->SetType(b2_staticBody);
-	right_flipper_anchor = App->physics->CreateCircle(216, 557, 3);
+	right_flipper_anchor = App->physics->CreateCircle(214, 560, 3);
 	right_flipper_anchor->body->SetType(b2_staticBody);
 
 	//left flipper movement
@@ -694,7 +694,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
 			{
-				ball->body->SetLinearVelocity(b2Vec2(-22, -20));
+				ball->body->SetLinearVelocity(b2Vec2(-11, -10));
 				center_body = nullptr;
 				sensor_holding = false;
 			}

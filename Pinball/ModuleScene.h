@@ -81,6 +81,8 @@ public:
 	PhysBody* stove_1_sensor;
 	PhysBody* stove_2_sensor;
 	PhysBody* restart_sensor;
+	PhysBody* left_triangle_sensor;
+	PhysBody* right_triangle_sensor;
 	bool sensed;
 
 	//sprites
