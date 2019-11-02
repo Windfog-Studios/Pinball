@@ -14,10 +14,10 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-	initial_position.x = START_BALL_POSITION_X;
-	initial_position.y = START_BALL_POSITION_Y;
-	//initial_position.x = 95;
-	//initial_position.y = 180;
+	//initial_position.x = START_BALL_POSITION_X;
+	//initial_position.y = START_BALL_POSITION_Y;
+	initial_position.x = 80;
+	initial_position.y = 450;
 }
 
 ModuleScene::~ModuleScene()
@@ -615,6 +615,13 @@ void ModuleScene::initializeInteractiveElements() {
 
 	restart_sensor = App->physics->CreateRectangleSensor(480, 555, 210, 40);
 
+	left_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
+	left_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(82), PIXEL_TO_METERS(490)), 60 * DEGTORAD);
+	left_triangle_sensor->listener = this;
+
+	right_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
+	right_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(240), PIXEL_TO_METERS(490)), -60 * DEGTORAD);
+	right_triangle_sensor->listener = this;
 }
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
@@ -719,7 +726,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			if (SDL_GetTicks() - sensor_contact_moment > stove_1_time * 1000)
 			{
-				ball->body->SetLinearVelocity(b2Vec2(-11, -10));
+				ball->body->SetLinearVelocity(b2Vec2(-14, -14));
 				center_body = nullptr;
 				sensor_holding = false;
 			}
@@ -728,6 +735,11 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				center_body = stove_2_sensor;
 			}
 		}
+	}
+
+	if (bodyA == left_triangle_sensor)
+	{
+		ball->body->SetLinearVelocity(b2Vec2(6, -6));
 	}
 }
 
