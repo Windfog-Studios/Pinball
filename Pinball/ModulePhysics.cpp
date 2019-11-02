@@ -19,7 +19,6 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 	debug = true;
 }
 
-// Destructor
 ModulePhysics::~ModulePhysics()
 {
 }
@@ -38,7 +37,6 @@ bool ModulePhysics::Start()
 	return true;
 }
 
-// 
 update_status ModulePhysics::PreUpdate()
 {
 	world->Step(1.0f / 60.0f, 6, 2);
@@ -70,6 +68,31 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
+
+	b->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = b;
+	b->SetUserData(pbody);
+	pbody->width = pbody->height = radius;
+
+	return pbody;
+}
+
+PhysBody* ModulePhysics::CreateCircleSensor(int x, int y, int radius)
+{
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* b = world->CreateBody(&body);
+
+	b2CircleShape shape;
+	shape.m_radius = PIXEL_TO_METERS(radius);
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+	fixture.density = 1.0f;
+	fixture.isSensor = true;
 
 	b->CreateFixture(&fixture);
 
@@ -202,7 +225,6 @@ PhysBody* ModulePhysics::CreateStaticChain(int x, int y, int* points, int size)
 	return pbody;
 }
 
-// 
 update_status ModulePhysics::PostUpdate()
 {
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
@@ -224,7 +246,8 @@ update_status ModulePhysics::PostUpdate()
 				{
 					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
 					b2Vec2 pos = f->GetBody()->GetPosition();
-					App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 100, 255, 100);
+					if (f->IsSensor()) { App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 255, 100, 100); }
+					else { App->renderer->DrawCircle(METERS_TO_PIXELS(pos.x), METERS_TO_PIXELS(pos.y), METERS_TO_PIXELS(shape->m_radius), 100, 255, 100); }
 				}
 				break;
 
@@ -281,7 +304,6 @@ update_status ModulePhysics::PostUpdate()
 				break;
 			}
 
-			// TODO 1: If mouse button 1 is pressed ...
 			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN) {
 				mouse.x = PIXEL_TO_METERS(App->input->GetMouseX());
 				mouse.y = PIXEL_TO_METERS(App->input->GetMouseY());
@@ -290,16 +312,9 @@ update_status ModulePhysics::PostUpdate()
 					break;
 				}
 			}
-
-
-			// test if the current body contains mouse position
 		}
 	}
 
-	// If a body was selected we will attach a mouse joint to it
-	// so we can pull it around
-	// TODO 2: If a body was selected, create a mouse joint
-	// using mouse_joint class property
 	if (body_clicked != NULL) 
 	{
 		b2MouseJointDef def;
@@ -332,8 +347,6 @@ update_status ModulePhysics::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
-
-// Called before quitting
 bool ModulePhysics::CleanUp()
 {
 	LOG("Destroying physics world");

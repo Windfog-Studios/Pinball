@@ -73,6 +73,11 @@ public:
 
 	//sensors
 	PhysBody* bottom_sensor;
+	PhysBody* drain_sensor;
+	PhysBody* circle_sensor1;
+	PhysBody* stove_1_sensor;
+	PhysBody* stove_2_sensor;
+	PhysBody* restart_sensor;
 	bool sensed;
 
 	//sprites
