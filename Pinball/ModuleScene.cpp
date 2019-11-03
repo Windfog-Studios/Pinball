@@ -317,8 +317,8 @@ update_status ModuleScene::Update()
 	App->renderer->Blit(spritesheet, 124, 76, &bonus_white, NULL, 40, SDL_FLIP_HORIZONTAL);
 	App->renderer->Blit(spritesheet, 114, 96, &bonus_white, NULL, 24, SDL_FLIP_HORIZONTAL);
 	App->renderer->Blit(spritesheet, 108, 116, &bonus_white, NULL, 8, SDL_FLIP_HORIZONTAL);
-	App->renderer->Blit(spritesheet, 110, 140, &bonus_white, NULL, -15, SDL_FLIP_HORIZONTAL);
-	App->renderer->Blit(spritesheet, 115, 160, &bonus_white, NULL, -30, SDL_FLIP_HORIZONTAL);
+	App->renderer->Blit(spritesheet, 109, 140, &bonus_white, NULL, -12, SDL_FLIP_HORIZONTAL);
+	App->renderer->Blit(spritesheet, 115, 158, &bonus_white, NULL, -28, SDL_FLIP_HORIZONTAL);
 
 	if (lives > 2)
 	{
