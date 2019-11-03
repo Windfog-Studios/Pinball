@@ -289,7 +289,7 @@ update_status ModuleScene::Update()
 	App->fonts->BlitText(480, 171, Point_number, point_text);
 
 	
-	sprintf_s(point_text, 10, "%7d", high_score);
+	sprintf_s(point_text, 10, "%7d", score);
 	App->fonts->BlitText(480, 200, Point_number, point_text);
 	
 
@@ -624,6 +624,12 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.localAxisA.Set(0, 2);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
+
+	//whites
+
+	bounce1 = App->physics->CreateRectangle(260, 80, 4, 24, 1.0f);
+	bounce1->body->SetType(b2_staticBody);
+	bounce1->body->SetTransform(b2Vec2(PIXEL_TO_METERS(262), PIXEL_TO_METERS(110)), -35 * DEGTORAD);
 
 	//sensors
 
