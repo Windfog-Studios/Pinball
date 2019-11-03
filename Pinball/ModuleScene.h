@@ -37,9 +37,6 @@ public:
 	int new_ball_y;
 	b2Vec2 new_ball_speed;
 
-	p2List<PhysBody*> circles;
-	p2List<PhysBody*> boxes;
-	p2List<PhysBody*> ricks;
 	p2List<PhysBody*> board;
 
 	PhysBody* triangle1;

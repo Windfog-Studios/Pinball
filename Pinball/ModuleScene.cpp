@@ -51,7 +51,6 @@ bool ModuleScene::Start()
 	ball_release_fx = App->audio->LoadFx("assets/sound/ball_release.wav");
 	kicker_fx = App->audio->LoadFx("assets/sound/kicker.wav");
 
-
 	InitializeSceneColliders();
 
 	initializeInteractiveElements();
@@ -64,12 +63,14 @@ bool ModuleScene::Start()
 
 bool ModuleScene::CleanUp()
 {
-	//App->physics->world->DestroyJoint(left_revolute_joint);
-	//left_revolute_joint = NULL;
+	LOG("Unloading Intro scene");
+
+	App->textures->Unload(spritesheet);
+	App->textures->Unload(board_tex);
+	App->textures->Unload(letters);
+	App->textures->Unload(letters_2);
 	App->fonts->UnLoad(Point_number);
 
-	LOG("Unloading Intro scene");
-	App->textures->Unload(spritesheet);
 	return true;
 }
 
@@ -86,28 +87,11 @@ update_status ModuleScene::Update()
 			ball->body->SetTransform(center_body->body->GetWorldCenter(), 0);
 		}
 
-		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-		{
-			ray_on = !ray_on;
-			ray.x = App->input->GetMouseX();
-			ray.y = App->input->GetMouseY();
-		}
+		//controls 
 
 		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		{
-			//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
-			//circles.getLast()->data->listener = this;
 			TranslateBall(initial_position.x, initial_position.y, b2Vec2_zero);
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-		{
-			boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-		{
-			LOG("");
 		}
 
 		if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
@@ -145,6 +129,7 @@ update_status ModuleScene::Update()
 			if (pow > 40)
 				pow = 40;
 		}
+
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 		{
 			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
@@ -179,45 +164,10 @@ update_status ModuleScene::Update()
 	fVector normal(0.0f, 0.0f);
 
 	// All draw functions ------------------------------------------------------
-	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	//draw scene
 
 	App->renderer->Blit(board_tex, 0, 0);
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		if(c->data->Contains(App->input->GetMouseX(), App->input->GetMouseY()))
-		App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
-		c = c->next;
-	}
-
-	c = boxes.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		if(ray_on)
-		{
-			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
-			if(hit >= 0)
-				ray_hit = hit;
-		}
-		c = c->next;
-	}
-
-	c = ricks.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
-		c = c->next;
-	}
 
 	//blit game elements
 
@@ -257,12 +207,13 @@ update_status ModuleScene::Update()
 	App->renderer->Blit(spritesheet, 210, 20, &knives);
 
 	//blit lights
-
 	SDL_Rect triangle_light = { 5, 107, 21, 29 };
+
 	if (show_left_light) {
 		App->renderer->Blit(spritesheet, 66, 482, &triangle_light, NULL, NULL, SDL_FLIP_HORIZONTAL);
 		show_left_light = false;
 	}
+
 	if (show_right_light)
 	{
 		App->renderer->Blit(spritesheet, 238, 482, &triangle_light);
@@ -271,7 +222,6 @@ update_status ModuleScene::Update()
 
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
-	
 
 	//blit letters 2
 	SDL_Rect letters_rect2 = { 2, 19, 208, 181 };
@@ -304,6 +254,8 @@ update_status ModuleScene::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
+	//lives system
+
 	if (lives > 2)
 	{
 		App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
@@ -331,8 +283,10 @@ update_status ModuleScene::Update()
 		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
 	}
 
+	//score system
 	if (score > high_score) high_score = score;
 
+	//bonus system
 	if ((drain_activated) && (stove_1_activated) && (stove_2_activated)) {
 		drain_activated = stove_1_activated = stove_2_activated = false;
 		if (lives < 3) lives++;
@@ -502,6 +456,7 @@ void ModuleScene::InitializeSceneColliders() {
 }
 
 void ModuleScene::initializeInteractiveElements() {
+
 	int left_flipper_points[10] = {
 	4, 20,
 	7, 14,
@@ -540,9 +495,7 @@ void ModuleScene::initializeInteractiveElements() {
 
 	//flippers
 	left_flipper = App->physics->CreateRectangle(108, 548, 48, 10);
-	//left_flipper->body->SetType(b2_staticBody);
 	right_flipper = App->physics->CreateRectangle(179, 548, 48, 10);
-	//right_flipper->body->SetType(b2_staticBody);
 
 	//flippers anchors
 	left_flipper_anchor = App->physics->CreateCircle(110, 560, 3);
@@ -553,7 +506,7 @@ void ModuleScene::initializeInteractiveElements() {
 	//left flipper movement
 	left_flipper_joint.bodyA = left_flipper->body;
 	left_flipper_joint.bodyB = left_flipper_anchor->body;
-	//left_flipper_joint.referenceAngle = 0;
+	left_flipper_joint.referenceAngle = 0;
 	left_flipper_joint.lowerAngle = -25 * DEGTORAD;
 	left_flipper_joint.upperAngle = 35 * DEGTORAD;
 	left_flipper_joint.enableLimit = true;
@@ -616,7 +569,6 @@ void ModuleScene::initializeInteractiveElements() {
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
 
 	//sensors
-
 	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH / 2, 1);
 	bottom_sensor->listener = this;
 	
@@ -644,15 +596,13 @@ void ModuleScene::initializeInteractiveElements() {
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	int x, y;
-	LOG("");
 
 	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
 	{
 		App->audio->PlayFx(pan_fx);
 		score += 10;
 	}
-
+	
 	if (bodyA == bottom_sensor)
 	{
 		if (sensed == false)
@@ -782,5 +732,5 @@ void ModuleScene::TranslateBall(int x, int y, b2Vec2 speed) {
 	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y)), 0);
 	ball->body->SetLinearVelocity(speed);
 	ball->body->SetAngularVelocity(0);
-	if ((x == START_BALL_POSITION_X) && (y == START_BALL_POSITION_Y))	App->audio->PlayFx(ball_release_fx);
+	if ((x == START_BALL_POSITION_X) && (y == START_BALL_POSITION_Y)) App->audio->PlayFx(ball_release_fx);
 }
