@@ -53,6 +53,7 @@ bool ModuleScene::Start()
 	capsule_fx = App->audio->LoadFx("assets/sound/capsule.wav");
 	stove_2_fx = App->audio->LoadFx("assets/sound/stove_2.wav");
 	ball_release_fx = App->audio->LoadFx("assets/sound/ball_release.wav");
+	kicker_fx = App->audio->LoadFx("assets/sound/kicker.wav");
 
 	InitializeSceneColliders();
 
@@ -60,9 +61,6 @@ bool ModuleScene::Start()
 
 	//player ball
 	ball = App->physics->CreateCircle(initial_position.x, initial_position.y, BALL_SIZE, 0.5f);
-
-	int x;
-	kicker->GetPosition(x, kicker_y);
 	
 	return ret;
 }
@@ -152,6 +150,7 @@ update_status ModuleScene::Update()
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 		{
 			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
+			App->audio->PlayFx(kicker_fx);
 		}
 
 	}

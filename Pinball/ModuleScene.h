@@ -72,7 +72,6 @@ public:
 
 	PhysBody* kicker;
 	PhysBody* static_kicker;
-	int kicker_y;
 
 	b2PrismaticJointDef kicker_joint;
 
@@ -110,6 +109,7 @@ public:
 	uint capsule_fx;
 	uint stove_2_fx;
 	uint ball_release_fx;
+	uint kicker_fx;
 
 	int stove_1_time = 2;
 	int stove_2_time = 2;
