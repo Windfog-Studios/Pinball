@@ -31,6 +31,7 @@ public:
 public:
 	int score = 0;
 	int high_score = 0;
+	int previous_score = 0;
 	int lives = 3;
 	b2Vec2 initial_position;
 	int new_ball_x;
@@ -119,6 +120,7 @@ public:
 	int last_time_hold = 0;
 
 	int Point_number = 0;
+	int Point_number2 = 0;
 	char point_text[10];
 
 	PhysBody* center_body = nullptr;
