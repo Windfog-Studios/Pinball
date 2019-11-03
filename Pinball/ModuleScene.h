@@ -39,7 +39,6 @@ public:
 
 	p2List<PhysBody*> board;
 
-	PhysBody* triangle1;
 	PhysBody* ball;
 
 	//flippers

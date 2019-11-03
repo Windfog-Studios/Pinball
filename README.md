@@ -12,6 +12,10 @@ https://github.com/silvino00
 
 Project's Github repository: https://github.com/Windfog-Studios/Pinball
 
+## Description
+
+Pinball based on the famous Disney Pixar film Ratatouille
+
 ## Controls:
 
  Left arrow: Left flipper
@@ -24,5 +28,10 @@ Project's Github repository: https://github.com/Windfog-Studios/Pinball
 
  ECAPE: Quit the game
 
-Differences with the original:
+## Bonus 
+
+If you get the ball into the three holes you will get an extra ball and 350 points
+
+## Differences with the original:
 - Rails not implemented
+- Bonus changed
