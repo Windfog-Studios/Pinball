@@ -653,11 +653,6 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		score += 10;
 	}
 
-	if ((bodyA == left_triangle) || (bodyA == right_triangle))
-	{
-		score += 10;
-	}
-
 	if (bodyA == bottom_sensor)
 	{
 		if (sensed == false)
@@ -757,16 +752,14 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if ((bodyA == left_triangle_bouncer)&&(bodyB == ball))
 	{
-		//ball->body->SetLinearVelocity(b2Vec2(4, -14));
 		App->audio->PlayFx(triangle_fx);
-		score += 30;
+		score += 10;
 		show_left_light = true;
 	}
 
 	if ((bodyA == right_triangle_bouncer) && (bodyB == ball)) {
-		//ball->body->SetLinearVelocity(b2Vec2(-10, -10));
 		App->audio->PlayFx(triangle_fx);
-		score += 30;
+		score += 10;
 		show_right_light = true;
 	}
 }
