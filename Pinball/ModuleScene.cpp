@@ -39,6 +39,7 @@ bool ModuleScene::Start()
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
 	Point_number = App->fonts->Load("assets/sprites/Point_numbers.png", "0123456789", 1);
+	Point_number2 = App->fonts->Load("assets/sprites/Point_numbers2.png", "0123456789", 1);
 	
 	//sounds and music
 
@@ -293,6 +294,9 @@ update_status ModuleScene::Update()
 	
 	sprintf_s(point_text, 10, "%7d", high_score);
 	App->fonts->BlitText(480, 200, Point_number, point_text);
+
+	sprintf_s(point_text, 10, "%7d", previous_score);
+	App->fonts->BlitText(480, 229, Point_number, point_text);
 	
 
 	// ray -----------------
@@ -310,22 +314,22 @@ update_status ModuleScene::Update()
 
 	if (lives > 2)
 	{
-		App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 519, 258, &ball_rect);
+		App->renderer->Blit(spritesheet, 499, 258, &ball_rect);
+		App->renderer->Blit(spritesheet, 479, 258, &ball_rect);
 		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
 		App->renderer->Blit(letters, 370, 350, &letters_rect);
 	}
 	if (lives > 1 && lives < 3)
 	{
-		App->renderer->Blit(spritesheet, 499, 224, &ball_rect);
-		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 499, 258, &ball_rect);
+		App->renderer->Blit(spritesheet, 479, 258, &ball_rect);
 		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
 		App->renderer->Blit(letters, 370, 350, &letters_rect);
 	}
 	if (lives > 0 && lives < 2)
 	{
-		App->renderer->Blit(spritesheet, 479, 224, &ball_rect);
+		App->renderer->Blit(spritesheet, 479, 258, &ball_rect);
 		App->renderer->Blit(spritesheet, 430, 546, &restart_rect);
 		App->renderer->Blit(letters, 370, 350, &letters_rect);
 	}
@@ -333,10 +337,13 @@ update_status ModuleScene::Update()
 	{
 		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
 		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
+		sprintf_s(point_text, 10, "%7d", score);
+		App->fonts->BlitText(450, 405, Point_number, point_text);
+		previous_score = score;
 	}
 
 	if (score > high_score) high_score = score;
-
+	
 	return UPDATE_CONTINUE;
 }
 
