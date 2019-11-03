@@ -51,13 +51,14 @@ bool ModuleScene::Start()
 	ring_fx = App->audio->LoadFx("assets/sound/ring.wav");
 	drain_fx = App->audio->LoadFx("assets/sound/drain.wav");
 	capsule_fx = App->audio->LoadFx("assets/sound/capsule.wav");
+	stove_2_fx = App->audio->LoadFx("assets/sound/stove_2.wav");
 
 	InitializeSceneColliders();
 
 	initializeInteractiveElements();
 
 	//player ball
-	ball = App->physics->CreateCircle(initial_position.x, initial_position.y, BALL_SIZE);
+	ball = App->physics->CreateCircle(initial_position.x, initial_position.y, BALL_SIZE, 0.5f);
 	
 	return ret;
 }
@@ -476,8 +477,8 @@ void ModuleScene::InitializeSceneColliders() {
 	right_wood = App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
     left_L = App->physics->CreateStaticChain(0, 0, left_l_points, 12);
 	right_L = App->physics->CreateStaticChain(0, 0, right_l_points, 12);
-	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16);
-	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16);
+	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16, 1.2f);
+	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16, 1.2f);
 
 	//collider listeners
 	left_triangle->listener = this;
@@ -508,9 +509,9 @@ void ModuleScene::initializeInteractiveElements() {
 	};
 
 	//flippers
-	left_flipper = App->physics->CreateRectangle(108, 548, 45, 10);
+	left_flipper = App->physics->CreateRectangle(108, 548, 48, 10);
 	//left_flipper->body->SetType(b2_staticBody);
-	right_flipper = App->physics->CreateRectangle(179, 548, 45, 10);
+	right_flipper = App->physics->CreateRectangle(179, 548, 48, 10);
 	//right_flipper->body->SetType(b2_staticBody);
 
 	//flippers anchors
@@ -543,13 +544,13 @@ void ModuleScene::initializeInteractiveElements() {
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
 
 	//pans
-	pan1 = App->physics->CreateCircle(180, 115, 16);
+	pan1 = App->physics->CreateCircle(180, 115, 16, 1.6f);
 	pan1->body->SetType(b2_staticBody);
 	pan1->listener = this;
-	pan2 = App->physics->CreateCircle(235, 120, 16);
+	pan2 = App->physics->CreateCircle(235, 120, 16, 1.6f);
 	pan2->body->SetType(b2_staticBody);
 	pan2->listener = this;
-	pan3 = App->physics->CreateCircle(195, 160, 16);
+	pan3 = App->physics->CreateCircle(195, 160, 16, 1.6f);
 	pan3->body->SetType(b2_staticBody);
 	pan3->listener = this;
 
@@ -579,10 +580,10 @@ void ModuleScene::initializeInteractiveElements() {
 	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH / 2, 1);
 	bottom_sensor->listener = this;
 	
-	drain_sensor = App->physics->CreateCircleSensor(96, 178, 10);
+	drain_sensor = App->physics->CreateCircleSensor(96, 178, 8);
 	drain_sensor->listener = this;
 
-	stove_1_sensor = App->physics->CreateCircleSensor(214, 241, 10);
+	stove_1_sensor = App->physics->CreateCircleSensor(214, 241, 8);
 	stove_1_sensor->listener = this;
 
 	stove_2_sensor = App->physics->CreateCircleSensor(299, 363, 10);
@@ -615,7 +616,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		App->audio->PlayFx(pan_fx);
 		points += 30;
-		ball->body->SetLinearVelocity(b2Vec2(10, 10));
+		//ball->body->SetLinearVelocity(b2Vec2(10, 10));
 	}
 
 	if ((bodyA == left_triangle) || (bodyA == right_triangle))
@@ -699,12 +700,13 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
+			App->audio->PlayFx(stove_2_fx);
 		}
 		else
 		{
 			if (SDL_GetTicks() - sensor_contact_moment > stove_2_time * 1000)
 			{
-				ball->body->SetLinearVelocity(b2Vec2(-10, -14));
+				ball->body->SetLinearVelocity(b2Vec2(-8, -14));
 				center_body = nullptr;
 				sensor_holding = false;
 				last_time_hold = SDL_GetTicks();

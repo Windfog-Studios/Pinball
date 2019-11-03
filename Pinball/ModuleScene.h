@@ -106,6 +106,7 @@ public:
 	uint ring_fx;
 	uint drain_fx;
 	uint capsule_fx;
+	uint stove_2_fx;
 
 	int stove_1_time = 2;
 	int stove_2_time = 2;
