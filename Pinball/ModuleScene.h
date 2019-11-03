@@ -31,6 +31,7 @@ public:
 public:
 
 	int points = 0;
+	int high_score = 0;
 	int lives = 3;
 	b2Vec2 initial_position;
 	int new_ball_x;

@@ -319,6 +319,10 @@ update_status ModuleScene::Update()
 		show_right_light = false;
 	}
 
+	if (points > high_score)
+	{
+		high_score = points;
+	}
 
 	return UPDATE_CONTINUE;
 }
