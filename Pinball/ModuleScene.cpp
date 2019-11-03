@@ -53,6 +53,8 @@ bool ModuleScene::Start()
 	drain_fx = App->audio->LoadFx("assets/sound/drain.wav");
 	capsule_fx = App->audio->LoadFx("assets/sound/capsule.wav");
 	stove_2_fx = App->audio->LoadFx("assets/sound/stove_2.wav");
+	ball_release_fx = App->audio->LoadFx("assets/sound/ball_release.wav");
+	kicker_fx = App->audio->LoadFx("assets/sound/kicker.wav");
 
 
 	InitializeSceneColliders();
@@ -72,7 +74,7 @@ bool ModuleScene::CleanUp()
 	App->fonts->UnLoad(Point_number);
 	LOG("Points: %i", points);
 	LOG("Unloading Intro scene");
-
+	App->textures->Unload(spritesheet);
 	return true;
 }
 
@@ -142,16 +144,16 @@ update_status ModuleScene::Update()
 		static int pow = 0;
 		static int impulse = 100;
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
-
+			kicker->body->ApplyForceToCenter(b2Vec2(0, pow*0.3 ),0);
 			pow += 2;
 			
-			if (pow > 100)
-				pow = 100;
+			if (pow > 40)
+				pow = 40;
 		}
-
-		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
+		{
 			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
-			pow = 0;
+			App->audio->PlayFx(kicker_fx);
 		}
 
 	}
@@ -246,11 +248,31 @@ update_status ModuleScene::Update()
 	// blit kicker
 	SDL_Rect kicker_rect = { 71,50,17,51 }; 
 	kicker->GetPosition(x, y);
-	App->renderer->Blit(spritesheet, x, y, &kicker_rect);
+	App->renderer->Blit(spritesheet, 328, y, &kicker_rect);
+
+
+	SDL_Rect red_carpet = { 373, 0, 139, 252 };
+	App->renderer->Blit(spritesheet, 34, 30, &red_carpet);
 
 	//blit sign
 	SDL_Rect sign = { 0,139,70,53 };
 	App->renderer->Blit(spritesheet, 35, 210, &sign);
+
+	SDL_Rect knives = { 191, 0, 169 ,206 };
+	App->renderer->Blit(spritesheet, 210, 20, &knives);
+
+	//blit lights
+
+	SDL_Rect triangle_light = { 5, 107, 21, 29 };
+	if (show_left_light) {
+		App->renderer->Blit(spritesheet, 66, 482, &triangle_light, NULL, NULL, SDL_FLIP_HORIZONTAL);
+		show_left_light = false;
+	}
+	if (show_right_light)
+	{
+		App->renderer->Blit(spritesheet, 238, 482, &triangle_light);
+		show_right_light = false;
+	}
 
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
@@ -313,6 +335,8 @@ update_status ModuleScene::Update()
 		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
 		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
 	}
+
+	if (points > high_score) high_score = points;
 
 	return UPDATE_CONTINUE;
 }
@@ -454,6 +478,44 @@ void ModuleScene::InitializeSceneColliders() {
 	226, 548,
 	283, 522
 	};
+	
+
+	//collider creation
+	App->physics->CreateStaticChain(0, 0, board_points, 58);
+	left_triangle = App->physics->CreateStaticChain(0, 0, triangle_1_points, 10);
+	right_triangle = App->physics->CreateStaticChain(0, 0, triangle_2_points, 10);
+	right_bar = App->physics->CreateStaticChain(0, 0, right_bar_points, 30);
+	left_wood = App->physics->CreateStaticChain(0, 0, left_wood_points, 56);
+	right_wood = App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
+    left_L = App->physics->CreateStaticChain(0, 0, left_l_points, 12);
+	right_L = App->physics->CreateStaticChain(0, 0, right_l_points, 12);
+
+	//collider listeners
+	left_triangle->listener = this;
+	right_triangle->listener = this;
+	right_bar->listener = this;
+	left_wood->listener = this;
+	right_wood->listener = this;
+	left_L->listener = this;
+	right_L->listener = this;
+}
+
+void ModuleScene::initializeInteractiveElements() {
+	int left_flipper_points[10] = {
+	4, 20,
+	7, 14,
+	53, 18,
+	50, 23,
+	5, 27
+	};
+	int right_flipper_points[10] = {
+	48, 15,
+	52, 22,
+	49, 29,
+	4, 25,
+	3, 21
+	};
+
 	int left_capsule_points[16] = {
 	190, 48,
 	194, 42,
@@ -473,46 +535,6 @@ void ModuleScene::InitializeSceneColliders() {
 	233, 85,
 	226, 85,
 	222, 81
-	};
-
-	//collider creation
-	App->physics->CreateStaticChain(0, 0, board_points, 58);
-	left_triangle = App->physics->CreateStaticChain(0, 0, triangle_1_points, 10);
-	right_triangle = App->physics->CreateStaticChain(0, 0, triangle_2_points, 10);
-	right_bar = App->physics->CreateStaticChain(0, 0, right_bar_points, 30);
-	left_wood = App->physics->CreateStaticChain(0, 0, left_wood_points, 56);
-	right_wood = App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
-    left_L = App->physics->CreateStaticChain(0, 0, left_l_points, 12);
-	right_L = App->physics->CreateStaticChain(0, 0, right_l_points, 12);
-	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16, 1.2f);
-	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16, 1.2f);
-
-	//collider listeners
-	left_triangle->listener = this;
-	right_triangle->listener = this;
-	right_bar->listener = this;
-	left_wood->listener = this;
-	right_wood->listener = this;
-	left_L->listener = this;
-	right_L->listener = this;
-	left_capsule->listener = this;
-	right_capsule->listener = this;
-}
-
-void ModuleScene::initializeInteractiveElements() {
-	int left_flipper_points[10] = {
-	4, 20,
-	7, 14,
-	53, 18,
-	50, 23,
-	5, 27
-	};
-	int right_flipper_points[10] = {
-	48, 15,
-	52, 22,
-	49, 29,
-	4, 25,
-	3, 21
 	};
 
 	//flippers
@@ -551,19 +573,25 @@ void ModuleScene::initializeInteractiveElements() {
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
 
 	//pans
-	pan1 = App->physics->CreateCircle(180, 115, 16, 1.6f);
+	pan1 = App->physics->CreateCircle(180, 115, 16, 1.2f);
 	pan1->body->SetType(b2_staticBody);
 	pan1->listener = this;
-	pan2 = App->physics->CreateCircle(235, 120, 16, 1.6f);
+	pan2 = App->physics->CreateCircle(235, 120, 16, 1.2f);
 	pan2->body->SetType(b2_staticBody);
 	pan2->listener = this;
-	pan3 = App->physics->CreateCircle(195, 160, 16, 1.6f);
+	pan3 = App->physics->CreateCircle(195, 160, 16, 1.2f);
 	pan3->body->SetType(b2_staticBody);
 	pan3->listener = this;
 
+	//capsules
+	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16, 1.0f);
+	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16, 1.0f);
+	left_capsule->listener = this;
+	right_capsule->listener = this;
+
 	//kicker
-	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 20, 5);
-	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 15, 5);
+	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X-2, START_BALL_POSITION_Y+195, 10, 5);
+	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X-2, START_BALL_POSITION_Y+195, 10, 5);
 
 	static_kicker->body->SetType(b2_staticBody);
 
@@ -572,13 +600,17 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.collideConnected = false;
 	kicker_joint.enableLimit = true;
 
-	kicker_joint.lowerTranslation = PIXEL_TO_METERS(0);
-	kicker_joint.upperTranslation = PIXEL_TO_METERS(40);
+	kicker_joint.lowerTranslation = PIXEL_TO_METERS(10);
+	kicker_joint.upperTranslation = PIXEL_TO_METERS(50);
 
 	kicker_joint.localAnchorA.Set(0, 0);
 	kicker_joint.localAnchorB.Set(0, 0);
 
-	kicker_joint.localAxisA.Set(0, 1);
+	kicker_joint.maxMotorForce = 12.0f;
+	kicker_joint.motorSpeed = 8.0f;
+	kicker_joint.enableMotor = true;
+
+	kicker_joint.localAxisA.Set(0, 2);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
 
@@ -593,18 +625,20 @@ void ModuleScene::initializeInteractiveElements() {
 	stove_1_sensor = App->physics->CreateCircleSensor(214, 241, 8);
 	stove_1_sensor->listener = this;
 
-	stove_2_sensor = App->physics->CreateCircleSensor(299, 363, 10);
+	stove_2_sensor = App->physics->CreateCircleSensor(299, 363, 8);
 	stove_2_sensor->listener = this;
 
 	restart_sensor = App->physics->CreateRectangleSensor(480, 555, 210, 40);
 
-	left_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
-	left_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(82), PIXEL_TO_METERS(490)), 60 * DEGTORAD);
-	left_triangle_sensor->listener = this;
+	left_triangle_bouncer = App->physics->CreateRectangle(0, 0, 60, 3, 1.2f);
+	left_triangle_bouncer->body->SetTransform(b2Vec2(PIXEL_TO_METERS(82), PIXEL_TO_METERS(490)), 60 * DEGTORAD);
+	left_triangle_bouncer->body->SetType(b2_staticBody);
+	left_triangle_bouncer->listener = this;
 
-	right_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
-	right_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(240), PIXEL_TO_METERS(490)), -60 * DEGTORAD);
-	right_triangle_sensor->listener = this;
+	right_triangle_bouncer = App->physics->CreateRectangle(0, 0, 60, 3, 1.2f);
+	right_triangle_bouncer->body->SetTransform(b2Vec2(PIXEL_TO_METERS(240), PIXEL_TO_METERS(490)), -60 * DEGTORAD);
+	right_triangle_bouncer->body->SetType(b2_staticBody);
+	right_triangle_bouncer->listener = this;
 }
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
@@ -613,11 +647,6 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	//cases in which bodyA == ball
 	LOG("");
-
-	if ((bodyA == left_flipper) | (bodyA == right_flipper))
-	{
-		ball->body->SetLinearVelocity(b2Vec2(6, 6));
-	}
 
 	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
 	{
@@ -629,7 +658,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if ((bodyA == left_triangle) || (bodyA == right_triangle))
 	{
-
+		points += 10;
 	}
 
 	if (bodyA == bottom_sensor)
@@ -661,6 +690,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			new_ball_speed.y = -25;
 			sensor_holding = true;
 			App->audio->PlayFx(drain_fx);
+			points += 100;
 		}
 		else
 		{
@@ -684,6 +714,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
+			points += 75;
 		}
 		else
 		{
@@ -710,6 +741,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
 			App->audio->PlayFx(stove_2_fx);
+			points += 125;
 		}
 		else
 		{
@@ -727,19 +759,23 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 	}
 
-	if (bodyA == left_triangle_sensor)
+	if ((bodyA == left_triangle_bouncer)&&(bodyB == ball))
 	{
-		ball->body->SetLinearVelocity(b2Vec2(4, -14));
+		//ball->body->SetLinearVelocity(b2Vec2(4, -14));
 		App->audio->PlayFx(triangle_fx);
 		points += 30;
 		player_point = player_point + 10;
+		show_left_light = true;
+		points += 20;
 	}
 
-	if (bodyA == right_triangle_sensor) {
-		ball->body->SetLinearVelocity(b2Vec2(-10, -10));
+	if ((bodyA == right_triangle_bouncer) && (bodyB == ball)) {
+		//ball->body->SetLinearVelocity(b2Vec2(-10, -10));
 		App->audio->PlayFx(triangle_fx);
 		points += 30;
 		player_point = player_point + 10;
+		show_right_light = true;
+		points += 20;
 	}
 }
 
@@ -755,7 +791,8 @@ void ModuleScene::NotOnCollision(PhysBody* bodyA, PhysBody* bodyB) {
 }
 
 void ModuleScene::TranslateBall(int x, int y, b2Vec2 speed) {
-	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(x),PIXEL_TO_METERS(y)),0);
+	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y)), 0);
 	ball->body->SetLinearVelocity(speed);
 	ball->body->SetAngularVelocity(0);
+	if ((x == START_BALL_POSITION_X) && (y == START_BALL_POSITION_Y))	App->audio->PlayFx(ball_release_fx);
 }

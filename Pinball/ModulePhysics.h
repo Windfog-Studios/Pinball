@@ -44,7 +44,7 @@ public:
 
 	PhysBody* CreateCircle(int x, int y, int radius, float restitution = 0.0f);
 	PhysBody* CreateCircleSensor(int x, int y, int radius);
-	PhysBody* CreateRectangle(int x, int y, int width, int height);
+	PhysBody* CreateRectangle(int x, int y, int width, int height, float restitution = 0.0f);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
 	PhysBody* CreateChain(int x, int y, int* points, int size);
 	PhysBody* CreateStaticChain(int x, int y, int* points, int size, float restitution = 0.0f);
