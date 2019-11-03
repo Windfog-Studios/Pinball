@@ -29,8 +29,7 @@ public:
 	void TranslateBall(int x, int y, b2Vec2 speed);
 
 public:
-
-	int points = 0;
+	int score = 0;
 	int high_score = 0;
 	int lives = 3;
 	b2Vec2 initial_position;
@@ -119,7 +118,6 @@ public:
 	int last_time_hold = 0;
 
 	int Point_number = 0;
-	int player_point = 0;
 	char point_text[10];
 
 	PhysBody* center_body = nullptr;

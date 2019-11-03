@@ -41,7 +41,6 @@ bool ModuleScene::Start()
 	Point_number = App->fonts->Load("assets/sprites/Point_numbers.png", "0123456789", 1);
 	
 	//sounds and music
-	player_point = 0;
 
 	//App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
@@ -72,7 +71,7 @@ bool ModuleScene::CleanUp()
 	//App->physics->world->DestroyJoint(left_revolute_joint);
 	//left_revolute_joint = NULL;
 	App->fonts->UnLoad(Point_number);
-	LOG("Points: %i", points);
+
 	LOG("Unloading Intro scene");
 	App->textures->Unload(spritesheet);
 	return true;
@@ -165,7 +164,7 @@ update_status ModuleScene::Update()
 			new_ball_x = START_BALL_POSITION_X;
 			new_ball_y = START_BALL_POSITION_Y;
 			new_ball_speed = b2Vec2_zero;
-			player_point = 0;
+			score = 0;
 		}
 
 	}
@@ -288,11 +287,11 @@ update_status ModuleScene::Update()
 	SDL_Rect restart_rect = { 0, 424, 118, 18 };
 	
 	
-	sprintf_s(point_text, 10, "%7d", player_point);
+	sprintf_s(point_text, 10, "%7d", score);
 	App->fonts->BlitText(480, 171, Point_number, point_text);
 
 	
-	sprintf_s(point_text, 10, "%7d", player_point);
+	sprintf_s(point_text, 10, "%7d", score);
 	App->fonts->BlitText(480, 200, Point_number, point_text);
 	
 
@@ -336,7 +335,7 @@ update_status ModuleScene::Update()
 		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
 	}
 
-	if (points > high_score) high_score = points;
+	if (score > high_score) high_score = score;
 
 	return UPDATE_CONTINUE;
 }
@@ -651,14 +650,12 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
 	{
 		App->audio->PlayFx(pan_fx);
-		points += 30;
-		//ball->body->SetLinearVelocity(b2Vec2(10, 10));
-		player_point = player_point + 20;
+		score += 10;
 	}
 
 	if ((bodyA == left_triangle) || (bodyA == right_triangle))
 	{
-		points += 10;
+		score += 10;
 	}
 
 	if (bodyA == bottom_sensor)
@@ -690,7 +687,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			new_ball_speed.y = -25;
 			sensor_holding = true;
 			App->audio->PlayFx(drain_fx);
-			points += 100;
+			score += 100;
 		}
 		else
 		{
@@ -714,7 +711,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
-			points += 75;
+			score += 75;
 		}
 		else
 		{
@@ -735,13 +732,12 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA == stove_2_sensor)
 	{
-		player_point = player_point + 30;
 		if (sensor_holding == false)
 		{
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
 			App->audio->PlayFx(stove_2_fx);
-			points += 125;
+			score += 125;
 		}
 		else
 		{
@@ -763,19 +759,15 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		//ball->body->SetLinearVelocity(b2Vec2(4, -14));
 		App->audio->PlayFx(triangle_fx);
-		points += 30;
-		player_point = player_point + 10;
+		score += 30;
 		show_left_light = true;
-		points += 20;
 	}
 
 	if ((bodyA == right_triangle_bouncer) && (bodyB == ball)) {
 		//ball->body->SetLinearVelocity(b2Vec2(-10, -10));
 		App->audio->PlayFx(triangle_fx);
-		points += 30;
-		player_point = player_point + 10;
+		score += 30;
 		show_right_light = true;
-		points += 20;
 	}
 }
 
