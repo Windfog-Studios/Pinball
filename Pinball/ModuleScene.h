@@ -72,6 +72,7 @@ public:
 
 	PhysBody* kicker;
 	PhysBody* static_kicker;
+	int kicker_y;
 
 	b2PrismaticJointDef kicker_joint;
 

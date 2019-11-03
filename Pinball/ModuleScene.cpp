@@ -60,6 +60,9 @@ bool ModuleScene::Start()
 
 	//player ball
 	ball = App->physics->CreateCircle(initial_position.x, initial_position.y, BALL_SIZE, 0.5f);
+
+	int x;
+	kicker->GetPosition(x, kicker_y);
 	
 	return ret;
 }
@@ -140,16 +143,15 @@ update_status ModuleScene::Update()
 		static int pow = 0;
 		static int impulse = 100;
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
-
+			kicker->body->ApplyForceToCenter(b2Vec2(0, pow*0.3 ),0);
 			pow += 2;
 			
-			if (pow > 100)
-				pow = 100;
+			if (pow > 40)
+				pow = 40;
 		}
-
-		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
+		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
+		{
 			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
-			pow = 0;
 		}
 
 	}
@@ -243,7 +245,7 @@ update_status ModuleScene::Update()
 	// blit kicker
 	SDL_Rect kicker_rect = { 71,50,17,51 }; 
 	kicker->GetPosition(x, y);
-	App->renderer->Blit(spritesheet, x, y, &kicker_rect);
+	App->renderer->Blit(spritesheet, 328, y, &kicker_rect);
 
 
 	SDL_Rect red_carpet = { 373, 0, 139, 252 };
@@ -470,6 +472,44 @@ void ModuleScene::InitializeSceneColliders() {
 	226, 548,
 	283, 522
 	};
+	
+
+	//collider creation
+	App->physics->CreateStaticChain(0, 0, board_points, 58);
+	left_triangle = App->physics->CreateStaticChain(0, 0, triangle_1_points, 10);
+	right_triangle = App->physics->CreateStaticChain(0, 0, triangle_2_points, 10);
+	right_bar = App->physics->CreateStaticChain(0, 0, right_bar_points, 30);
+	left_wood = App->physics->CreateStaticChain(0, 0, left_wood_points, 56);
+	right_wood = App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
+    left_L = App->physics->CreateStaticChain(0, 0, left_l_points, 12);
+	right_L = App->physics->CreateStaticChain(0, 0, right_l_points, 12);
+
+	//collider listeners
+	left_triangle->listener = this;
+	right_triangle->listener = this;
+	right_bar->listener = this;
+	left_wood->listener = this;
+	right_wood->listener = this;
+	left_L->listener = this;
+	right_L->listener = this;
+}
+
+void ModuleScene::initializeInteractiveElements() {
+	int left_flipper_points[10] = {
+	4, 20,
+	7, 14,
+	53, 18,
+	50, 23,
+	5, 27
+	};
+	int right_flipper_points[10] = {
+	48, 15,
+	52, 22,
+	49, 29,
+	4, 25,
+	3, 21
+	};
+
 	int left_capsule_points[16] = {
 	190, 48,
 	194, 42,
@@ -489,46 +529,6 @@ void ModuleScene::InitializeSceneColliders() {
 	233, 85,
 	226, 85,
 	222, 81
-	};
-
-	//collider creation
-	App->physics->CreateStaticChain(0, 0, board_points, 58);
-	left_triangle = App->physics->CreateStaticChain(0, 0, triangle_1_points, 10);
-	right_triangle = App->physics->CreateStaticChain(0, 0, triangle_2_points, 10);
-	right_bar = App->physics->CreateStaticChain(0, 0, right_bar_points, 30);
-	left_wood = App->physics->CreateStaticChain(0, 0, left_wood_points, 56);
-	right_wood = App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
-    left_L = App->physics->CreateStaticChain(0, 0, left_l_points, 12);
-	right_L = App->physics->CreateStaticChain(0, 0, right_l_points, 12);
-	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16, 1.4f);
-	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16, 1.4f);
-
-	//collider listeners
-	left_triangle->listener = this;
-	right_triangle->listener = this;
-	right_bar->listener = this;
-	left_wood->listener = this;
-	right_wood->listener = this;
-	left_L->listener = this;
-	right_L->listener = this;
-	left_capsule->listener = this;
-	right_capsule->listener = this;
-}
-
-void ModuleScene::initializeInteractiveElements() {
-	int left_flipper_points[10] = {
-	4, 20,
-	7, 14,
-	53, 18,
-	50, 23,
-	5, 27
-	};
-	int right_flipper_points[10] = {
-	48, 15,
-	52, 22,
-	49, 29,
-	4, 25,
-	3, 21
 	};
 
 	//flippers
@@ -567,19 +567,25 @@ void ModuleScene::initializeInteractiveElements() {
 	b2RevoluteJoint* right_joint = (b2RevoluteJoint*)App->physics->world->CreateJoint(&right_flipper_joint);
 
 	//pans
-	pan1 = App->physics->CreateCircle(180, 115, 16, 1.6f);
+	pan1 = App->physics->CreateCircle(180, 115, 16, 1.2f);
 	pan1->body->SetType(b2_staticBody);
 	pan1->listener = this;
-	pan2 = App->physics->CreateCircle(235, 120, 16, 1.6f);
+	pan2 = App->physics->CreateCircle(235, 120, 16, 1.2f);
 	pan2->body->SetType(b2_staticBody);
 	pan2->listener = this;
-	pan3 = App->physics->CreateCircle(195, 160, 16, 1.6f);
+	pan3 = App->physics->CreateCircle(195, 160, 16, 1.2f);
 	pan3->body->SetType(b2_staticBody);
 	pan3->listener = this;
 
+	//capsules
+	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16, 1.0f);
+	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16, 1.0f);
+	left_capsule->listener = this;
+	right_capsule->listener = this;
+
 	//kicker
-	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 20, 5);
-	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X, START_BALL_POSITION_Y+190, 15, 5);
+	kicker = App->physics->CreateRectangle(START_BALL_POSITION_X-2, START_BALL_POSITION_Y+195, 10, 5);
+	static_kicker = App->physics->CreateRectangle(START_BALL_POSITION_X-2, START_BALL_POSITION_Y+195, 10, 5);
 
 	static_kicker->body->SetType(b2_staticBody);
 
@@ -588,13 +594,17 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.collideConnected = false;
 	kicker_joint.enableLimit = true;
 
-	kicker_joint.lowerTranslation = PIXEL_TO_METERS(0);
-	kicker_joint.upperTranslation = PIXEL_TO_METERS(40);
+	kicker_joint.lowerTranslation = PIXEL_TO_METERS(10);
+	kicker_joint.upperTranslation = PIXEL_TO_METERS(50);
 
 	kicker_joint.localAnchorA.Set(0, 0);
 	kicker_joint.localAnchorB.Set(0, 0);
 
-	kicker_joint.localAxisA.Set(0, 1);
+	kicker_joint.maxMotorForce = 12.0f;
+	kicker_joint.motorSpeed = 8.0f;
+	kicker_joint.enableMotor = true;
+
+	kicker_joint.localAxisA.Set(0, 2);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
 
@@ -609,7 +619,7 @@ void ModuleScene::initializeInteractiveElements() {
 	stove_1_sensor = App->physics->CreateCircleSensor(214, 241, 8);
 	stove_1_sensor->listener = this;
 
-	stove_2_sensor = App->physics->CreateCircleSensor(299, 363, 10);
+	stove_2_sensor = App->physics->CreateCircleSensor(299, 363, 8);
 	stove_2_sensor->listener = this;
 
 	restart_sensor = App->physics->CreateRectangleSensor(480, 555, 210, 40);
