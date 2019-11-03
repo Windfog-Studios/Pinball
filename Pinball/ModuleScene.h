@@ -96,6 +96,7 @@ public:
 	SDL_Texture* spritesheet;
 	SDL_Texture* letters;
 	SDL_Texture* letters_2;
+	SDL_Texture* letters_3;
 		
 	//fx
 	bool playing_left_flipper_fx;

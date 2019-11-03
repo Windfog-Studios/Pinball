@@ -34,6 +34,7 @@ bool ModuleScene::Start()
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
+	letters_3 = App->textures->Load("assets/sprites/Letra_derecha3.png");
 	Point_number = App->fonts->Load("assets/sprites/Point_numbers.png", "0123456789", 1);
 	Point_number2 = App->fonts->Load("assets/sprites/Point_numbers2.png", "0123456789", 1);
 	
@@ -70,6 +71,7 @@ bool ModuleScene::CleanUp()
 	App->textures->Unload(board_tex);
 	App->textures->Unload(letters);
 	App->textures->Unload(letters_2);
+	App->textures->Unload(letters_3);
 	App->fonts->UnLoad(Point_number);
 
 	return true;
@@ -226,6 +228,9 @@ update_status ModuleScene::Update()
 
 	//blit letters 2
 	SDL_Rect letters_rect2 = { 2, 19, 208, 181 };
+
+	//blit letters 3
+	SDL_Rect letters_rect3 = { 2, 19, 208, 181 };
 	
 	//play letters
 	SDL_Rect play_rect = { 0, 386, 60, 18 };
@@ -284,10 +289,18 @@ update_status ModuleScene::Update()
 	if (lives < 1)
 	{
 		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
-		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
 		sprintf_s(point_text, 10, "%7d", score);
 		App->fonts->BlitText(450, 405, Point_number, point_text);
 		previous_score = score;
+		if (score < 100)
+		{
+			App->renderer->Blit(letters_3, 370, 350, &letters_rect3);
+		}
+		else
+		{
+			App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
+		}
+		
 	}
 
 	//score system
