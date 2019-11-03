@@ -69,9 +69,8 @@ bool ModuleScene::CleanUp()
 {
 	//App->physics->world->DestroyJoint(left_revolute_joint);
 	//left_revolute_joint = NULL;
-	LOG("Points: %i", points);
 	LOG("Unloading Intro scene");
-
+	App->textures->Unload(spritesheet);
 	return true;
 }
 
