@@ -245,9 +245,29 @@ update_status ModuleScene::Update()
 	kicker->GetPosition(x, y);
 	App->renderer->Blit(spritesheet, x, y, &kicker_rect);
 
+
+	SDL_Rect red_carpet = { 373, 0, 139, 252 };
+	App->renderer->Blit(spritesheet, 34, 30, &red_carpet);
+
 	//blit sign
 	SDL_Rect sign = { 0,139,70,53 };
 	App->renderer->Blit(spritesheet, 35, 210, &sign);
+
+	SDL_Rect knives = { 191, 0, 169 ,206 };
+	App->renderer->Blit(spritesheet, 210, 20, &knives);
+
+	//blit lights
+
+	SDL_Rect triangle_light = { 5, 107, 21, 29 };
+	if (show_left_light) {
+		App->renderer->Blit(spritesheet, 66, 482, &triangle_light, NULL, NULL, SDL_FLIP_HORIZONTAL);
+		show_left_light = false;
+	}
+	if (show_right_light)
+	{
+		App->renderer->Blit(spritesheet, 238, 482, &triangle_light);
+		show_right_light = false;
+	}
 
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
@@ -308,21 +328,7 @@ update_status ModuleScene::Update()
 		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
 	}
 
-	SDL_Rect triangle_light = { 5, 107, 21, 29 };
-	if (show_left_light) {
-		App->renderer->Blit(spritesheet, 66, 482, &triangle_light, NULL, NULL, SDL_FLIP_HORIZONTAL);
-		show_left_light = false;
-	}
-	if (show_right_light)
-	{
-		App->renderer->Blit(spritesheet, 238, 482, &triangle_light);
-		show_right_light = false;
-	}
-
-	if (points > high_score)
-	{
-		high_score = points;
-	}
+	if (points > high_score) high_score = points;
 
 	return UPDATE_CONTINUE;
 }
@@ -630,11 +636,6 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		App->audio->PlayFx(pan_fx);
 		points += 10;
-	}
-
-	if ((bodyA == left_triangle) || (bodyA == right_triangle))
-	{
-
 	}
 
 	if (bodyA == bottom_sensor)
