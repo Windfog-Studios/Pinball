@@ -52,6 +52,7 @@ bool ModuleScene::Start()
 	drain_fx = App->audio->LoadFx("assets/sound/drain.wav");
 	capsule_fx = App->audio->LoadFx("assets/sound/capsule.wav");
 	stove_2_fx = App->audio->LoadFx("assets/sound/stove_2.wav");
+	ball_release_fx = App->audio->LoadFx("assets/sound/ball_release.wav");
 
 	InitializeSceneColliders();
 
@@ -307,6 +308,18 @@ update_status ModuleScene::Update()
 		App->renderer->Blit(letters_2, 370, 350, &letters_rect2);
 	}
 
+	SDL_Rect triangle_light = { 5, 107, 21, 29 };
+	if (show_left_light) {
+		App->renderer->Blit(spritesheet, 66, 482, &triangle_light, NULL, NULL, SDL_FLIP_HORIZONTAL);
+		show_left_light = false;
+	}
+	if (show_right_light)
+	{
+		App->renderer->Blit(spritesheet, 238, 482, &triangle_light);
+		show_right_light = false;
+	}
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -477,8 +490,8 @@ void ModuleScene::InitializeSceneColliders() {
 	right_wood = App->physics->CreateStaticChain(0, 0, right_wood_points, 48);
     left_L = App->physics->CreateStaticChain(0, 0, left_l_points, 12);
 	right_L = App->physics->CreateStaticChain(0, 0, right_l_points, 12);
-	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16, 1.2f);
-	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16, 1.2f);
+	left_capsule = App->physics->CreateStaticChain(0, 0, left_capsule_points, 16, 1.4f);
+	right_capsule = App->physics->CreateStaticChain(0, 0, right_capsule_points, 16, 1.4f);
 
 	//collider listeners
 	left_triangle->listener = this;
@@ -591,13 +604,15 @@ void ModuleScene::initializeInteractiveElements() {
 
 	restart_sensor = App->physics->CreateRectangleSensor(480, 555, 210, 40);
 
-	left_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
-	left_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(82), PIXEL_TO_METERS(490)), 60 * DEGTORAD);
-	left_triangle_sensor->listener = this;
+	left_triangle_bouncer = App->physics->CreateRectangle(0, 0, 60, 3, 1.2f);
+	left_triangle_bouncer->body->SetTransform(b2Vec2(PIXEL_TO_METERS(82), PIXEL_TO_METERS(490)), 60 * DEGTORAD);
+	left_triangle_bouncer->body->SetType(b2_staticBody);
+	left_triangle_bouncer->listener = this;
 
-	right_triangle_sensor = App->physics->CreateRectangleSensor(0, 0, 60, 3);
-	right_triangle_sensor->body->SetTransform(b2Vec2(PIXEL_TO_METERS(240), PIXEL_TO_METERS(490)), -60 * DEGTORAD);
-	right_triangle_sensor->listener = this;
+	right_triangle_bouncer = App->physics->CreateRectangle(0, 0, 60, 3, 1.2f);
+	right_triangle_bouncer->body->SetTransform(b2Vec2(PIXEL_TO_METERS(240), PIXEL_TO_METERS(490)), -60 * DEGTORAD);
+	right_triangle_bouncer->body->SetType(b2_staticBody);
+	right_triangle_bouncer->listener = this;
 }
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
@@ -607,16 +622,10 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	//cases in which bodyA == ball
 	LOG("");
 
-	if ((bodyA == left_flipper) | (bodyA == right_flipper))
-	{
-		ball->body->SetLinearVelocity(b2Vec2(6, 6));
-	}
-
 	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
 	{
 		App->audio->PlayFx(pan_fx);
-		points += 30;
-		//ball->body->SetLinearVelocity(b2Vec2(10, 10));
+		points += 10;
 	}
 
 	if ((bodyA == left_triangle) || (bodyA == right_triangle))
@@ -653,6 +662,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			new_ball_speed.y = -25;
 			sensor_holding = true;
 			App->audio->PlayFx(drain_fx);
+			points += 100;
 		}
 		else
 		{
@@ -676,6 +686,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
+			points += 75;
 		}
 		else
 		{
@@ -701,6 +712,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
 			App->audio->PlayFx(stove_2_fx);
+			points += 125;
 		}
 		else
 		{
@@ -718,17 +730,19 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 	}
 
-	if (bodyA == left_triangle_sensor)
+	if ((bodyA == left_triangle_bouncer)&&(bodyB == ball))
 	{
-		ball->body->SetLinearVelocity(b2Vec2(4, -14));
+		//ball->body->SetLinearVelocity(b2Vec2(4, -14));
 		App->audio->PlayFx(triangle_fx);
-		points += 30;
+		show_left_light = true;
+		points += 20;
 	}
 
-	if (bodyA == right_triangle_sensor) {
-		ball->body->SetLinearVelocity(b2Vec2(-10, -10));
+	if ((bodyA == right_triangle_bouncer) && (bodyB == ball)) {
+		//ball->body->SetLinearVelocity(b2Vec2(-10, -10));
 		App->audio->PlayFx(triangle_fx);
-		points += 30;
+		show_right_light = true;
+		points += 20;
 	}
 }
 
@@ -744,7 +758,8 @@ void ModuleScene::NotOnCollision(PhysBody* bodyA, PhysBody* bodyB) {
 }
 
 void ModuleScene::TranslateBall(int x, int y, b2Vec2 speed) {
-	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(x),PIXEL_TO_METERS(y)),0);
+	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y)), 0);
 	ball->body->SetLinearVelocity(speed);
 	ball->body->SetAngularVelocity(0);
+	if ((x == START_BALL_POSITION_X) && (y == START_BALL_POSITION_Y))	App->audio->PlayFx(ball_release_fx);
 }

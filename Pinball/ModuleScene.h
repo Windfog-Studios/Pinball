@@ -81,8 +81,8 @@ public:
 	PhysBody* stove_1_sensor;
 	PhysBody* stove_2_sensor;
 	PhysBody* restart_sensor;
-	PhysBody* left_triangle_sensor;
-	PhysBody* right_triangle_sensor;
+	PhysBody* left_triangle_bouncer;
+	PhysBody* right_triangle_bouncer;
 	bool sensed;
 
 	//sprites
@@ -107,6 +107,7 @@ public:
 	uint drain_fx;
 	uint capsule_fx;
 	uint stove_2_fx;
+	uint ball_release_fx;
 
 	int stove_1_time = 2;
 	int stove_2_time = 2;
@@ -120,6 +121,9 @@ public:
 	int player_point = 0;
 
 	PhysBody* center_body = nullptr;
+
+	bool show_left_light = false;
+	bool show_right_light = false;
 
 	p2Point<int> ray;
 	bool ray_on;
