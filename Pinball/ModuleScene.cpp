@@ -32,9 +32,7 @@ bool ModuleScene::Start()
 
 	//sprites
 
-	circle = App->textures->Load("assets/wheel.png"); 
 	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
-	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
@@ -307,6 +305,20 @@ update_status ModuleScene::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
+
+	//Blit bonus whites
+	SDL_Rect bonus_white = { 9,348,18,25 };
+	//right
+	App->renderer->Blit(spritesheet, 260, 80, &bonus_white, NULL, -35);
+	App->renderer->Blit(spritesheet, 266, 105, &bonus_white, NULL, -8);
+	App->renderer->Blit(spritesheet, 264, 130, &bonus_white, NULL, 12);
+	App->renderer->Blit(spritesheet, 256, 150, &bonus_white, NULL, 25);
+	//left
+	App->renderer->Blit(spritesheet, 124, 76, &bonus_white, NULL, 40, SDL_FLIP_HORIZONTAL);
+	App->renderer->Blit(spritesheet, 114, 96, &bonus_white, NULL, 24, SDL_FLIP_HORIZONTAL);
+	App->renderer->Blit(spritesheet, 108, 116, &bonus_white, NULL, 8, SDL_FLIP_HORIZONTAL);
+	App->renderer->Blit(spritesheet, 110, 140, &bonus_white, NULL, -15, SDL_FLIP_HORIZONTAL);
+	App->renderer->Blit(spritesheet, 115, 160, &bonus_white, NULL, -30, SDL_FLIP_HORIZONTAL);
 
 	if (lives > 2)
 	{
@@ -643,8 +655,6 @@ void ModuleScene::initializeInteractiveElements() {
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
-
-	//cases in which bodyA == ball
 	LOG("");
 
 	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
