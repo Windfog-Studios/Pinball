@@ -16,8 +16,6 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	sensed = false;
 	initial_position.x = START_BALL_POSITION_X;
 	initial_position.y = START_BALL_POSITION_Y;
-	//initial_position.x = 80;
-	//initial_position.y = 450;
 }
 
 ModuleScene::~ModuleScene()
@@ -40,7 +38,7 @@ bool ModuleScene::Start()
 	
 	//sounds and music
 
-	//App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
+	App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
 	pan_fx = App->audio->LoadFx("assets/sound/pan.wav");
 	triangle_fx = App->audio->LoadFx("assets/sound/triangle.wav");
@@ -154,6 +152,8 @@ update_status ModuleScene::Update()
 		}
 
 	}
+
+	// start or restart game
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 	{
 		if (restart_sensor->Contains(App->input->GetMouseX(), App->input->GetMouseY())) {
@@ -163,12 +163,11 @@ update_status ModuleScene::Update()
 			new_ball_y = START_BALL_POSITION_Y;
 			new_ball_speed = b2Vec2_zero;
 			score = 0;
+			drain_activated = stove_1_activated = stove_2_activated = false;
 		}
 
 	}
 	
-
-	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
 
 	// Prepare for raycast ------------------------------------------------------
 	
@@ -201,7 +200,6 @@ update_status ModuleScene::Update()
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		//App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
 		if(ray_on)
 		{
 			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
@@ -334,6 +332,12 @@ update_status ModuleScene::Update()
 	}
 
 	if (score > high_score) high_score = score;
+
+	if ((drain_activated) && (stove_1_activated) && (stove_2_activated)) {
+		drain_activated = stove_1_activated = stove_2_activated = false;
+		if (lives < 3) lives++;
+		score += 350;
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -679,6 +683,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_holding = true;
 			App->audio->PlayFx(drain_fx);
 			score += 100;
+			drain_activated = true;
 		}
 		else
 		{
@@ -703,6 +708,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
 			score += 75;
+			stove_1_activated = true;
 		}
 		else
 		{
@@ -729,6 +735,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_holding = true;
 			App->audio->PlayFx(stove_2_fx);
 			score += 125;
+			stove_2_activated = true;
 		}
 		else
 		{

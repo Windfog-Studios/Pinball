@@ -83,6 +83,11 @@ public:
 	PhysBody* restart_sensor;
 	PhysBody* left_triangle_bouncer;
 	PhysBody* right_triangle_bouncer;
+
+	bool drain_activated = false;
+	bool stove_1_activated = false;
+	bool stove_2_activated = false;
+
 	bool sensed;
 
 	//sprites
