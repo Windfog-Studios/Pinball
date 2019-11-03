@@ -243,7 +243,7 @@ update_status ModuleScene::Update()
 	App->fonts->BlitText(480, 171, Point_number, point_text);
 
 	
-	sprintf_s(point_text, 10, "%7d", score);
+	sprintf_s(point_text, 10, "%7d", high_score);
 	App->fonts->BlitText(480, 200, Point_number, point_text);
 
 	sprintf_s(point_text, 10, "%7d", previous_score);
@@ -290,7 +290,7 @@ update_status ModuleScene::Update()
 	{
 		App->renderer->Blit(spritesheet, 450, 546, &play_rect);
 		sprintf_s(point_text, 10, "%7d", score);
-		App->fonts->BlitText(450, 405, Point_number, point_text);
+		App->fonts->BlitText(450, 405, Point_number2, point_text);
 		previous_score = score;
 		if (score < 100)
 		{
