@@ -73,6 +73,7 @@ bool ModuleScene::CleanUp()
 	App->textures->Unload(letters_2);
 	App->textures->Unload(letters_3);
 	App->fonts->UnLoad(Point_number);
+	App->fonts->UnLoad(Point_number2);
 
 	return true;
 }
@@ -292,7 +293,8 @@ update_status ModuleScene::Update()
 		sprintf_s(point_text, 10, "%7d", score);
 		App->fonts->BlitText(450, 405, Point_number2, point_text);
 		previous_score = score;
-		if (score < 100)
+		drain_activated = stove_1_activated = stove_2_activated = false;
+		if (score < 300)
 		{
 			App->renderer->Blit(letters_3, 370, 350, &letters_rect3);
 		}
@@ -612,6 +614,7 @@ void ModuleScene::initializeInteractiveElements() {
 	right_triangle_bouncer->body->SetTransform(b2Vec2(PIXEL_TO_METERS(240), PIXEL_TO_METERS(490)), -60 * DEGTORAD);
 	right_triangle_bouncer->body->SetType(b2_staticBody);
 	right_triangle_bouncer->listener = this;
+
 }
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
