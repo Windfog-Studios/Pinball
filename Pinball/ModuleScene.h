@@ -65,27 +65,6 @@ public:
 	PhysBody* left_wood;
 	PhysBody* right_wood;
 
-	//whites for bonus
-	PhysBody* bounce1;
-	PhysBody* bounce2;
-	PhysBody* bounce3;
-	PhysBody* bounce4;
-	PhysBody* bounce5;
-	PhysBody* bounce6;
-	PhysBody* bounce7;
-	PhysBody* bounce8;
-	PhysBody* bounce9;
-
-	bool bounce_1_hit = false;
-	bool bounce_2_hit = false;
-	bool bounce_3_hit = false;
-	bool bounce_4_hit = false;
-	bool bounce_5_hit = false;
-	bool bounce_6_hit = false;
-	bool bounce_7_hit = false;
-	bool bounce_8_hit = false;
-	bool bounce_9_hit = false;
-
 	//b2RevoluteJoint* left_flipper_joint = nullptr;
 	b2RevoluteJointDef left_flipper_joint;
 	b2RevoluteJointDef right_flipper_joint;

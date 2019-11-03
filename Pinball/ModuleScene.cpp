@@ -306,20 +306,6 @@ update_status ModuleScene::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
-	//Blit bonus whites
-	SDL_Rect bonus_white = { 9,348,18,25 };
-	//right
-	App->renderer->Blit(spritesheet, 260, 80, &bonus_white, NULL, -35);
-	App->renderer->Blit(spritesheet, 266, 105, &bonus_white, NULL, -8);
-	App->renderer->Blit(spritesheet, 264, 130, &bonus_white, NULL, 12);
-	App->renderer->Blit(spritesheet, 256, 150, &bonus_white, NULL, 25);
-	//left
-	App->renderer->Blit(spritesheet, 124, 76, &bonus_white, NULL, 40, SDL_FLIP_HORIZONTAL);
-	App->renderer->Blit(spritesheet, 114, 96, &bonus_white, NULL, 24, SDL_FLIP_HORIZONTAL);
-	App->renderer->Blit(spritesheet, 108, 116, &bonus_white, NULL, 8, SDL_FLIP_HORIZONTAL);
-	App->renderer->Blit(spritesheet, 109, 140, &bonus_white, NULL, -12, SDL_FLIP_HORIZONTAL);
-	App->renderer->Blit(spritesheet, 115, 158, &bonus_white, NULL, -28, SDL_FLIP_HORIZONTAL);
-
 	if (lives > 2)
 	{
 		App->renderer->Blit(spritesheet, 519, 224, &ball_rect);
@@ -624,12 +610,6 @@ void ModuleScene::initializeInteractiveElements() {
 	kicker_joint.localAxisA.Set(0, 2);
 
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
-
-	//whites
-
-	bounce1 = App->physics->CreateRectangle(260, 80, 4, 24, 1.0f);
-	bounce1->body->SetType(b2_staticBody);
-	bounce1->body->SetTransform(b2Vec2(PIXEL_TO_METERS(262), PIXEL_TO_METERS(110)), -35 * DEGTORAD);
 
 	//sensors
 
