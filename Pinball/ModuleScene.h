@@ -115,9 +115,9 @@ public:
 	int time_between_holds = 2;
 	int last_time_hold = 0;
 
-	int Point_numbers = 0;
-	char point_text[10];
+	int Point_number = 0;
 	int player_point = 0;
+	char point_text[10];
 
 	PhysBody* center_body = nullptr;
 

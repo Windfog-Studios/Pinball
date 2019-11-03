@@ -38,9 +38,10 @@ bool ModuleScene::Start()
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
-	Point_numbers = App->fonts->Load("assets/sprites/Point_numbers.png", "9876543210", 1);
+	Point_number = App->fonts->Load("assets/sprites/Point_numbers.png", "0123456789", 1);
 	
 	//sounds and music
+	player_point = 0;
 
 	//App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
@@ -52,6 +53,7 @@ bool ModuleScene::Start()
 	drain_fx = App->audio->LoadFx("assets/sound/drain.wav");
 	capsule_fx = App->audio->LoadFx("assets/sound/capsule.wav");
 	stove_2_fx = App->audio->LoadFx("assets/sound/stove_2.wav");
+
 
 	InitializeSceneColliders();
 
@@ -67,6 +69,7 @@ bool ModuleScene::CleanUp()
 {
 	//App->physics->world->DestroyJoint(left_revolute_joint);
 	//left_revolute_joint = NULL;
+	App->fonts->UnLoad(Point_number);
 	LOG("Points: %i", points);
 	LOG("Unloading Intro scene");
 
@@ -160,6 +163,7 @@ update_status ModuleScene::Update()
 			new_ball_x = START_BALL_POSITION_X;
 			new_ball_y = START_BALL_POSITION_Y;
 			new_ball_speed = b2Vec2_zero;
+			player_point = 0;
 		}
 
 	}
@@ -261,10 +265,13 @@ update_status ModuleScene::Update()
 	//replay letters
 	SDL_Rect restart_rect = { 0, 424, 118, 18 };
 	
-	/*
+	
 	sprintf_s(point_text, 10, "%7d", player_point);
-	App->fonts->BlitText(147, 51, Point_numbers, point_text);
-	*/
+	App->fonts->BlitText(480, 171, Point_number, point_text);
+
+	
+	sprintf_s(point_text, 10, "%7d", player_point);
+	App->fonts->BlitText(480, 200, Point_number, point_text);
 	
 
 	// ray -----------------
@@ -617,6 +624,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		App->audio->PlayFx(pan_fx);
 		points += 30;
 		//ball->body->SetLinearVelocity(b2Vec2(10, 10));
+		player_point = player_point + 20;
 	}
 
 	if ((bodyA == left_triangle) || (bodyA == right_triangle))
@@ -696,6 +704,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA == stove_2_sensor)
 	{
+		player_point = player_point + 30;
 		if (sensor_holding == false)
 		{
 			sensor_contact_moment = SDL_GetTicks();
@@ -723,12 +732,14 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		ball->body->SetLinearVelocity(b2Vec2(4, -14));
 		App->audio->PlayFx(triangle_fx);
 		points += 30;
+		player_point = player_point + 10;
 	}
 
 	if (bodyA == right_triangle_sensor) {
 		ball->body->SetLinearVelocity(b2Vec2(-10, -10));
 		App->audio->PlayFx(triangle_fx);
 		points += 30;
+		player_point = player_point + 10;
 	}
 }
 
