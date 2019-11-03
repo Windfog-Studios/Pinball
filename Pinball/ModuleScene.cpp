@@ -16,8 +16,6 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 	sensed = false;
 	initial_position.x = START_BALL_POSITION_X;
 	initial_position.y = START_BALL_POSITION_Y;
-	//initial_position.x = 80;
-	//initial_position.y = 450;
 }
 
 ModuleScene::~ModuleScene()
@@ -32,9 +30,7 @@ bool ModuleScene::Start()
 
 	//sprites
 
-	circle = App->textures->Load("assets/wheel.png"); 
 	board_tex = App->textures->Load("assets/sprites/Rat_and_roll_board.png");
-	flipper_tex = App->textures->Load("assets/sprites/left_bumper.png");
 	spritesheet = App->textures->Load("assets/sprites/interactive_elements.png");
 	letters = App->textures->Load("assets/sprites/Letra_derecha.png");
 	letters_2 = App->textures->Load("assets/sprites/Letra_derecha2.png");
@@ -43,7 +39,7 @@ bool ModuleScene::Start()
 	
 	//sounds and music
 
-	//App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
+	App->audio->PlayMusic("assets/sound/background_music.ogg", 2.0f);
 	bonus_fx = App->audio->LoadFx("assets/bonus.wav");
 	pan_fx = App->audio->LoadFx("assets/sound/pan.wav");
 	triangle_fx = App->audio->LoadFx("assets/sound/triangle.wav");
@@ -55,7 +51,6 @@ bool ModuleScene::Start()
 	stove_2_fx = App->audio->LoadFx("assets/sound/stove_2.wav");
 	ball_release_fx = App->audio->LoadFx("assets/sound/ball_release.wav");
 	kicker_fx = App->audio->LoadFx("assets/sound/kicker.wav");
-
 
 	InitializeSceneColliders();
 
@@ -69,12 +64,14 @@ bool ModuleScene::Start()
 
 bool ModuleScene::CleanUp()
 {
-	//App->physics->world->DestroyJoint(left_revolute_joint);
-	//left_revolute_joint = NULL;
+	LOG("Unloading Intro scene");
+
+	App->textures->Unload(spritesheet);
+	App->textures->Unload(board_tex);
+	App->textures->Unload(letters);
+	App->textures->Unload(letters_2);
 	App->fonts->UnLoad(Point_number);
 
-	LOG("Unloading Intro scene");
-	App->textures->Unload(spritesheet);
 	return true;
 }
 
@@ -91,28 +88,11 @@ update_status ModuleScene::Update()
 			ball->body->SetTransform(center_body->body->GetWorldCenter(), 0);
 		}
 
-		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-		{
-			ray_on = !ray_on;
-			ray.x = App->input->GetMouseX();
-			ray.y = App->input->GetMouseY();
-		}
+		//controls 
 
 		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		{
-			//circles.add(App->physics->CreateCircle(START_BALL_POSITION_X, START_BALL_POSITION_X, BALL_SIZE));
-			//circles.getLast()->data->listener = this;
 			TranslateBall(initial_position.x, initial_position.y, b2Vec2_zero);
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-		{
-			boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-		}
-
-		if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-		{
-			LOG("");
 		}
 
 		if (!(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)) playing_left_flipper_fx = false;
@@ -150,6 +130,7 @@ update_status ModuleScene::Update()
 			if (pow > 40)
 				pow = 40;
 		}
+
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP)
 		{
 			kicker->body->ApplyForceToCenter(b2Vec2(0, -pow), 1);
@@ -157,6 +138,8 @@ update_status ModuleScene::Update()
 		}
 
 	}
+
+	// start or restart game
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
 	{
 		if (restart_sensor->Contains(App->input->GetMouseX(), App->input->GetMouseY())) {
@@ -166,12 +149,11 @@ update_status ModuleScene::Update()
 			new_ball_y = START_BALL_POSITION_Y;
 			new_ball_speed = b2Vec2_zero;
 			score = 0;
+			drain_activated = stove_1_activated = stove_2_activated = false;
 		}
 
 	}
 	
-
-	//LOG("motor speed %.2f", left_flipper_joint->GetJointSpeed());
 
 	// Prepare for raycast ------------------------------------------------------
 	
@@ -183,46 +165,10 @@ update_status ModuleScene::Update()
 	fVector normal(0.0f, 0.0f);
 
 	// All draw functions ------------------------------------------------------
-	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	//draw scene
 
 	App->renderer->Blit(board_tex, 0, 0);
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		if(c->data->Contains(App->input->GetMouseX(), App->input->GetMouseY()))
-		App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
-		c = c->next;
-	}
-
-	c = boxes.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		//App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
-		if(ray_on)
-		{
-			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
-			if(hit >= 0)
-				ray_hit = hit;
-		}
-		c = c->next;
-	}
-
-	c = ricks.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
-		c = c->next;
-	}
 
 	//blit game elements
 
@@ -262,12 +208,13 @@ update_status ModuleScene::Update()
 	App->renderer->Blit(spritesheet, 210, 20, &knives);
 
 	//blit lights
-
 	SDL_Rect triangle_light = { 5, 107, 21, 29 };
+
 	if (show_left_light) {
 		App->renderer->Blit(spritesheet, 66, 482, &triangle_light, NULL, NULL, SDL_FLIP_HORIZONTAL);
 		show_left_light = false;
 	}
+
 	if (show_right_light)
 	{
 		App->renderer->Blit(spritesheet, 238, 482, &triangle_light);
@@ -276,7 +223,6 @@ update_status ModuleScene::Update()
 
 	//blit letters
 	SDL_Rect letters_rect = { 2, 19, 208, 181};
-	
 
 	//blit letters 2
 	SDL_Rect letters_rect2 = { 2, 19, 208, 181 };
@@ -292,7 +238,7 @@ update_status ModuleScene::Update()
 	App->fonts->BlitText(480, 171, Point_number, point_text);
 
 	
-	sprintf_s(point_text, 10, "%7d", high_score);
+	sprintf_s(point_text, 10, "%7d", score);
 	App->fonts->BlitText(480, 200, Point_number, point_text);
 
 	sprintf_s(point_text, 10, "%7d", previous_score);
@@ -311,6 +257,8 @@ update_status ModuleScene::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
+
+	//lives system
 
 	if (lives > 2)
 	{
@@ -342,8 +290,16 @@ update_status ModuleScene::Update()
 		previous_score = score;
 	}
 
+	//score system
 	if (score > high_score) high_score = score;
-	
+
+	//bonus system
+	if ((drain_activated) && (stove_1_activated) && (stove_2_activated)) {
+		drain_activated = stove_1_activated = stove_2_activated = false;
+		if (lives < 3) lives++;
+		score += 350;
+	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -507,6 +463,7 @@ void ModuleScene::InitializeSceneColliders() {
 }
 
 void ModuleScene::initializeInteractiveElements() {
+
 	int left_flipper_points[10] = {
 	4, 20,
 	7, 14,
@@ -545,9 +502,7 @@ void ModuleScene::initializeInteractiveElements() {
 
 	//flippers
 	left_flipper = App->physics->CreateRectangle(108, 548, 48, 10);
-	//left_flipper->body->SetType(b2_staticBody);
 	right_flipper = App->physics->CreateRectangle(179, 548, 48, 10);
-	//right_flipper->body->SetType(b2_staticBody);
 
 	//flippers anchors
 	left_flipper_anchor = App->physics->CreateCircle(110, 560, 3);
@@ -558,7 +513,7 @@ void ModuleScene::initializeInteractiveElements() {
 	//left flipper movement
 	left_flipper_joint.bodyA = left_flipper->body;
 	left_flipper_joint.bodyB = left_flipper_anchor->body;
-	//left_flipper_joint.referenceAngle = 0;
+	left_flipper_joint.referenceAngle = 0;
 	left_flipper_joint.lowerAngle = -25 * DEGTORAD;
 	left_flipper_joint.upperAngle = 35 * DEGTORAD;
 	left_flipper_joint.enableLimit = true;
@@ -621,7 +576,6 @@ void ModuleScene::initializeInteractiveElements() {
 	b2PrismaticJoint* joint_launcher = (b2PrismaticJoint*)App->physics->world->CreateJoint(&kicker_joint);
 
 	//sensors
-
 	bottom_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 4, SCREEN_HEIGHT, SCREEN_WIDTH / 2, 1);
 	bottom_sensor->listener = this;
 	
@@ -649,17 +603,13 @@ void ModuleScene::initializeInteractiveElements() {
 
 void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	int x, y;
-
-	//cases in which bodyA == ball
-	LOG("");
 
 	if ((bodyA == pan1) || (bodyA == pan2) || (bodyA == pan3))
 	{
 		App->audio->PlayFx(pan_fx);
 		score += 10;
 	}
-
+	
 	if (bodyA == bottom_sensor)
 	{
 		if (sensed == false)
@@ -690,6 +640,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_holding = true;
 			App->audio->PlayFx(drain_fx);
 			score += 100;
+			drain_activated = true;
 		}
 		else
 		{
@@ -714,6 +665,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_contact_moment = SDL_GetTicks();
 			sensor_holding = true;
 			score += 75;
+			stove_1_activated = true;
 		}
 		else
 		{
@@ -740,6 +692,7 @@ void ModuleScene::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			sensor_holding = true;
 			App->audio->PlayFx(stove_2_fx);
 			score += 125;
+			stove_2_activated = true;
 		}
 		else
 		{
@@ -786,5 +739,5 @@ void ModuleScene::TranslateBall(int x, int y, b2Vec2 speed) {
 	ball->body->SetTransform(b2Vec2(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y)), 0);
 	ball->body->SetLinearVelocity(speed);
 	ball->body->SetAngularVelocity(0);
-	if ((x == START_BALL_POSITION_X) && (y == START_BALL_POSITION_Y))	App->audio->PlayFx(ball_release_fx);
+	if ((x == START_BALL_POSITION_X) && (y == START_BALL_POSITION_Y)) App->audio->PlayFx(ball_release_fx);
 }

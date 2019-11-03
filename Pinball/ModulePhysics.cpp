@@ -16,7 +16,7 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 {
 	world = NULL;
 	mouse_joint = NULL;
-	debug = true;
+	debug = false;
 }
 
 ModulePhysics::~ModulePhysics()
@@ -306,13 +306,18 @@ update_status ModulePhysics::PostUpdate()
 				}
 				break;
 			}
-
-			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN) {
-				mouse.x = PIXEL_TO_METERS(App->input->GetMouseX());
-				mouse.y = PIXEL_TO_METERS(App->input->GetMouseY());
-				if (f->GetShape()->TestPoint(f->GetBody()->GetTransform(), mouse) == true) {
-					body_clicked = f->GetBody();
-					break;
+			if (debug) {
+				if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN) {
+					mouse.x = PIXEL_TO_METERS(App->input->GetMouseX());
+					mouse.y = PIXEL_TO_METERS(App->input->GetMouseY());
+					if (f->GetShape()->TestPoint(f->GetBody()->GetTransform(), mouse) == true) {
+						body_clicked = f->GetBody();
+						break;
+					}
+					else
+					{
+						body_clicked = NULL;
+					}
 				}
 			}
 		}

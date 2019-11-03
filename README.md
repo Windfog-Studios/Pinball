@@ -14,11 +14,15 @@ Project's Github repository: https://github.com/Windfog-Studios/Pinball
 
 ## Controls:
 
-Left arrow: Left flipper
+ Left arrow: Left flipper
 
-Right arrow: Right flipper
+ Right arrow: Right flipper
 
-Down arrow: Kicker
+ Down arrow: Kicker
+
+ 1: Move the ball to its starting position
+
+ ECAPE: Quit the game
 
 Differences with the original:
 - Rails not implemented
