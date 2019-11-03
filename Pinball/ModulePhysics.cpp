@@ -334,11 +334,6 @@ update_status ModulePhysics::PostUpdate()
 			mouse_joint->SetTarget(mouse);
 			b2Vec2 anchorB = mouse_joint->GetTarget();
 			App->renderer->DrawLine(mouse.x, mouse.y, PIXEL_TO_METERS(position.x), PIXEL_TO_METERS(position.y), 255, 100, 100);
-			LOG("Line");
-			LOG("mouse x: %f", mouse.x);
-			LOG("mouse y: %f", mouse.y);
-			LOG("position: x: %f", position.x);
-			LOG("position: y: %f", position.y);
 		}
 	}
 
@@ -346,10 +341,6 @@ update_status ModulePhysics::PostUpdate()
 		world->DestroyJoint(mouse_joint);
 		mouse_joint = nullptr;
 	}
-
-	// TODO 3: If the player keeps pressing the mouse button, update
-	// target position and draw a red line between both anchor points
-	// TODO 4: If the player releases the mouse button, destroy the joint
 
 	return UPDATE_CONTINUE;
 }

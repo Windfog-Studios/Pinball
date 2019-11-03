@@ -103,6 +103,9 @@ public:
 	uint triangle_fx;
 	uint ball_lost_fx;
 	uint flipper_fx;
+	uint ring_fx;
+	uint drain_fx;
+	uint capsule_fx;
 
 	int stove_1_time = 2;
 	int stove_2_time = 2;
